@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Селектори та їх вага</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Демонстрація CSS селекторів та їх ваги</h1>
+
+    <p>Селектор тегу p, вага 1</p>
+
+    <div class="blue-box">Селектор класу .blue-box, вага 10</div>
+
+    <section id="green-section">Селектор id #green-section, вага 100</section>
+
+    <input type="text" value="Селектор атрибуту [type='text'], вага 10">
+
+    <div>
+        <span>Вкладені селектори div span, вага 2</span>
+    </div>
+
+    <article class="container">
+        <p>Дочірній селектор .container > p, вага 21</p>
+    </article>
+
+    <div class="highlight important">Послідовність селекторів .highlight.important, вага 20</div>
+
+    <h2 class="title">Комбінація тег + клас h2.title, вага 11</h2>
+
+    <button class="btn" disabled>Комбінація button.btn[disabled], вага 21</button>
+
+    <div id="wrapper">
+        <ul class="list">
+            <li>Складна комбінація #wrapper > ul.list li, вага 111</li>
+        </ul>
+    </div>
+
+    <p style="background-color: #ffc266; padding: 10px; margin: 10px 0; border-radius: 5px;">Inline стилі style="...", вага 1000</p>
+</body>
+</html>

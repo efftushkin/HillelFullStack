@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts - Amanita Design Games</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li>
+                <a href="articles.html">Articles</a>
+                <ul>
+                    <li><a href="articles.html#samorost1">Samorost 1</a></li>
+                    <li><a href="articles.html#samorost2">Samorost 2</a></li>
+                    <li><a href="articles.html#samorost3">Samorost 3</a></li>
+                </ul>
+            </li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="contacts.html">Contacts</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you! Share your thoughts about the Samorost series, ask questions, or just say hello.</p>
+
+        <form action="#" method="post">
+            <fieldset>
+                <legend>Personal Information</legend>
+                
+                <div>
+                    <label for="firstName">First Name: *</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+
+                <div>
+                    <label for="lastName">Last Name: *</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+
+                <div>
+                    <label for="email">Email Address: *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div>
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567">
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Your Gaming Experience</legend>
+                
+                <div>
+                    <label for="favoriteGame">Favorite Samorost Game:</label>
+                    <select id="favoriteGame" name="favoriteGame">
+                        <option value="">-- Please select --</option>
+                        <option value="samorost1">Samorost 1</option>
+                        <option value="samorost2">Samorost 2</option>
+                        <option value="samorost3">Samorost 3</option>
+                        <option value="all">I love them all!</option>
+                        <option value="none">Haven't played yet</option>
+                    </select>
+                </div>
+
+                <div>
+                    <p>Which games have you played?</p>
+                    <div>
+                        <input type="checkbox" id="played1" name="playedGames" value="samorost1">
+                        <label for="played1">Samorost 1</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="played2" name="playedGames" value="samorost2">
+                        <label for="played2">Samorost 2</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="played3" name="playedGames" value="samorost3">
+                        <label for="played3">Samorost 3</label>
+                    </div>
+                </div>
+
+                <div>
+                    <p>How did you discover Samorost?</p>
+                    <div>
+                        <input type="radio" id="discoverFriend" name="discovery" value="friend">
+                        <label for="discoverFriend">Friend recommendation</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="discoverOnline" name="discovery" value="online">
+                        <label for="discoverOnline">Online review or article</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="discoverStore" name="discovery" value="store">
+                        <label for="discoverStore">Game store (Steam, App Store, etc.)</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="discoverOther" name="discovery" value="other">
+                        <label for="discoverOther">Other</label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Your Message</legend>
+                
+                <div>
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" placeholder="What is your message about?">
+                </div>
+
+                <div>
+                    <label for="message">Message: *</label>
+                    <textarea id="message" name="message" rows="8" cols="50" required placeholder="Share your thoughts, questions, or feedback about the Samorost series..."></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Newsletter Subscription</legend>
+                
+                <div>
+                    <input type="checkbox" id="newsletter" name="newsletter" value="yes">
+                    <label for="newsletter">Subscribe to our newsletter for updates about Amanita Design games</label>
+                </div>
+
+                <div>
+                    <label for="frequency">Preferred newsletter frequency:</label>
+                    <select id="frequency" name="frequency">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly" selected>Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <div>
+                <button type="submit">Send Message</button>
+                <button type="reset">Clear Form</button>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Amanita Design Games Portal. Educational project.</p>
+    </footer>
+</body>
+</html>

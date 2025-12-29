@@ -47,6 +47,17 @@ This repository will be continuously updated with homework assignments as the co
   - Attribute selectors
   - Specificity calculation examples
 
+#### HW6 - HTML Table Layout
+- **Location**: `hw6/`
+- **Description**: Creating a Mondrian-style composition using HTML tables
+- **Topics**: HTML tables, colspan, rowspan, CSS layout
+- **Features**:
+  - Complex table structure with merged cells
+  - Mondrian-inspired color scheme (yellow, red, blue, black)
+  - Precise sizing with CSS classes
+  - Centered layout with flexbox
+- **Files**: `index.html`, `style.css`
+
 ## Technologies Used
 
 - HTML5

@@ -58,6 +58,24 @@ This repository will be continuously updated with homework assignments as the co
   - Centered layout with flexbox
 - **Files**: `index.html`, `style.css`
 
+#### HW7 - CSS Fundamentals (in Ukrainian)
+- **Location**: `hw7/`
+- **Description**: Comprehensive CSS fundamentals with interactive demonstrations
+- **Topics**: Box model, positioning, display properties, float, overflow
+- **Exercises**:
+  - Block and inline elements (`02-block-inline.html`)
+  - Normalize.css demonstration (`03-normalize.html`)
+  - Reset.css demonstration (`03-reset.html`)
+  - CSS properties: display and box-sizing (`04-css-properties.html`)
+  - Float and clear techniques (`05-float-clear.html`)
+  - Overflow property (`06-overflow.html`)
+  - Positioning: static, relative, absolute, fixed, sticky (`07-positioning.html`)
+- **Features**:
+  - Interactive navigation hub (`index.html`)
+  - Detailed explanations in Ukrainian
+  - Visual demonstrations of each concept
+  - Comparison of normalize.css vs reset.css
+
 ## Technologies Used
 
 - HTML5

@@ -58,9 +58,9 @@ This repository will be continuously updated with homework assignments as the co
   - Centered layout with flexbox
 - **Files**: `index.html`, `style.css`
 
-#### HW7 - CSS Fundamentals (in Ukrainian)
+#### HW7 - Експерименти з блоковою моделлю (Box Model Experiments)
 - **Location**: `hw7/`
-- **Description**: Comprehensive CSS fundamentals with interactive demonstrations
+- **Description**: Comprehensive CSS box model experiments with interactive demonstrations (in Ukrainian)
 - **Topics**: Box model, positioning, display properties, float, overflow
 - **Exercises**:
   - Block and inline elements (`02-block-inline.html`)

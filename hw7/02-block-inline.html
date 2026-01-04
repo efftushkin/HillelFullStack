@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блокові та інлайнові елементи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Block elements */
+        .block-example {
+            background-color: #e3f2fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        /* Inline elements */
+        .inline-example {
+            background-color: #fff3e0;
+            padding: 5px 10px;
+            border: 2px solid #ff9800;
+        }
+
+        /* Demonstration of difference */
+        .demo-container {
+            border: 2px dashed #666;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Робота з блоковими та інлайновими елементами</h1>
+    
+    <div class="section">
+        <h2>Блокові елементи (div)</h2>
+        <p>Блокові елементи займають всю доступну ширину і починаються з нового рядка.</p>
+        
+        <div class="demo-container">
+            <div class="block-example">Перший блоковий елемент (div)</div>
+            <div class="block-example">Другий блоковий елемент (div)</div>
+            <div class="block-example">Третій блоковий елемент (div)</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Інлайнові елементи (span)</h2>
+        <p>Інлайнові елементи займають тільки необхідну ширину і не переносяться на новий рядок.</p>
+        
+        <div class="demo-container">
+            <span class="inline-example">Перший span</span>
+            <span class="inline-example">Другий span</span>
+            <span class="inline-example">Третій span</span>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Комбінація блокових та інлайнових елементів</h2>
+        
+        <div class="demo-container">
+            <div class="block-example">
+                Це блоковий елемент з 
+                <span class="inline-example">інлайновим елементом</span> 
+                всередині. Також тут є 
+                <span class="highlight">виділений текст</span> 
+                та ще один 
+                <span class="inline-example">span елемент</span>.
+            </div>
+            
+            <div class="block-example">
+                Ще один блок з <span class="inline-example">кількома</span> 
+                <span class="inline-example">інлайновими</span> 
+                <span class="inline-example">елементами</span> підряд.
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Експеримент з вкладеністю</h2>
+        
+        <div class="demo-container">
+            <div class="block-example">
+                Зовнішній div
+                <div class="block-example" style="margin: 10px 0;">
+                    Вкладений div
+                    <span class="inline-example">з span елементом</span>
+                </div>
+                Продовження зовнішнього div
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Висновки</h2>
+        <ul>
+            <li><strong>DIV (блоковий):</strong> займає всю ширину, починається з нового рядка</li>
+            <li><strong>SPAN (інлайновий):</strong> займає тільки необхідну ширину, розміщується в рядку</li>
+            <li>Блокові елементи можуть містити інлайнові та інші блокові елементи</li>
+            <li>Інлайнові елементи зазвичай містять тільки текст та інші інлайнові елементи</li>
+        </ul>
+    </div>
+</body>
+</html>
+

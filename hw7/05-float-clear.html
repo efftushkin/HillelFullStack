@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Float та Clear - Практика</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 4px solid #2196f3;
+            margin: 10px 0;
+        }
+        
+        /* Float examples */
+        .float-left {
+            float: left;
+            width: 200px;
+            height: 150px;
+            background-color: #ffcdd2;
+            border: 3px solid #f44336;
+            padding: 15px;
+            margin: 0 15px 15px 0;
+        }
+
+        .float-right {
+            float: right;
+            width: 200px;
+            height: 150px;
+            background-color: #c8e6c9;
+            border: 3px solid #4caf50;
+            padding: 15px;
+            margin: 0 0 15px 15px;
+        }
+
+        .float-left-box {
+            float: left;
+            width: 150px;
+            height: 100px;
+            background-color: #fff9c4;
+            border: 2px solid #fbc02d;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        /* Clear examples */
+        .clear-left {
+            clear: left;
+            background-color: #e1bee7;
+            padding: 10px;
+            border: 2px solid #9c27b0;
+        }
+
+        .clear-right {
+            clear: right;
+            background-color: #b2dfdb;
+            padding: 10px;
+            border: 2px solid #009688;
+        }
+
+        .clear-both {
+            clear: both;
+            background-color: #d1c4e9;
+            padding: 10px;
+            border: 2px solid #673ab7;
+            margin-top: 10px;
+        }
+
+        /* Clearfix technique */
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .container {
+            background-color: #f0f0f0;
+            border: 3px dashed #666;
+            padding: 10px;
+            margin: 15px 0;
+        }
+        
+        .image-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .text-content {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Практика з Float та Clear</h1>
+    
+    <div class="section">
+        <h2>1. Float: left</h2>
+        <p class="info">Елемент "пливе" ліворуч, а текст обтікає його справа.</p>
+        
+        <div class="container">
+            <div class="float-left image-placeholder">Float Left</div>
+            <p class="text-content">
+                Це текст, який обтікає елемент з float: left. Зверніть увагу, як текст 
+                розміщується праворуч від блоку, що "пливе". Float часто використовується 
+                для створення макетів з обтіканням зображень текстом. Це класична техніка 
+                верстки, яка була дуже популярна до появи Flexbox та Grid. Текст продовжує 
+                обтікати елемент, поки не закінчиться місце або не буде застосовано clear.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod 
+                tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Float: right</h2>
+        <p class="info">Елемент "пливе" праворуч, а текст обтікає його зліва.</p>
+        
+        <div class="container">
+            <div class="float-right image-placeholder">Float Right</div>
+            <p class="text-content">
+                Це текст, який обтікає елемент з float: right. Тепер блок розміщений 
+                праворуч, а текст обтікає його зліва. Це корисно для створення різноманітних 
+                макетів, наприклад, коли потрібно розмістити зображення праворуч від тексту.
+                Float right часто використовується для sidebar'ів або додаткової інформації.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim 
+                veniam, quis nostrud exercitation ullamco laboris.
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>3. Кілька float елементів</h2>
+        <p class="info">Коли кілька елементів мають float, вони вишиковуються в ряд.</p>
+
+        <div class="container clearfix">
+            <div class="float-left-box">Блок 1</div>
+            <div class="float-left-box">Блок 2</div>
+            <div class="float-left-box">Блок 3</div>
+            <div class="float-left-box">Блок 4</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. Clear: left</h2>
+        <p class="info">Clear: left забороняє обтікання зліва - елемент переноситься вниз.</p>
+
+        <div class="container">
+            <div class="float-left image-placeholder" style="height: 100px;">Float Left 1</div>
+            <div class="float-left image-placeholder" style="height: 100px; margin-left: 15px;">Float Left 2</div>
+            <div class="clear-left">
+                Цей елемент має clear: left, тому він переноситься під всі float: left елементи.
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. Clear: right</h2>
+        <p class="info">Clear: right забороняє обтікання справа.</p>
+
+        <div class="container">
+            <div class="float-right image-placeholder" style="height: 100px;">Float Right 1</div>
+            <div class="float-right image-placeholder" style="height: 100px; margin-right: 15px;">Float Right 2</div>
+            <div class="clear-right">
+                Цей елемент має clear: right, тому він переноситься під всі float: right елементи.
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. Clear: both</h2>
+        <p class="info">Clear: both забороняє обтікання з обох сторін - найчастіше використовується.</p>
+
+        <div class="container">
+            <div class="float-left image-placeholder" style="height: 100px;">Float Left</div>
+            <div class="float-right image-placeholder" style="height: 100px;">Float Right</div>
+            <div class="clear-both">
+                Цей елемент має clear: both, тому він переноситься під всі float елементи
+                (і left, і right). Це найбільш універсальний варіант clear.
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. Проблема "схлопування" контейнера</h2>
+        <p class="info">Контейнер без clearfix не "бачить" висоту float елементів.</p>
+
+        <h3>Без clearfix (контейнер "схлопнувся"):</h3>
+        <div class="container">
+            <div class="float-left image-placeholder">Float елемент</div>
+            <p>Контейнер не враховує висоту float елемента.</p>
+        </div>
+
+        <h3>З clearfix (контейнер охоплює float елементи):</h3>
+        <div class="container clearfix">
+            <div class="float-left image-placeholder">Float елемент</div>
+            <p>Завдяки clearfix контейнер правильно охоплює float елемент.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. Практичний приклад: макет з sidebar</h2>
+        <p class="info">Класичне використання float для створення макету.</p>
+
+        <div class="container clearfix">
+            <div style="float: left; width: 70%; background-color: #e3f2fd; padding: 15px; box-sizing: border-box;">
+                <h3>Основний контент</h3>
+                <p>Це основна область контенту, яка займає 70% ширини.</p>
+            </div>
+            <div style="float: right; width: 28%; background-color: #fff3e0; padding: 15px; box-sizing: border-box;">
+                <h3>Sidebar</h3>
+                <p>Бічна панель (28% ширини).</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Висновки</h2>
+        <ul>
+            <li><strong>float: left/right</strong> - елемент "пливе" в сторону, інші обтікають його</li>
+            <li><strong>clear: left/right/both</strong> - забороняє обтікання, переносить елемент вниз</li>
+            <li><strong>clearfix</strong> - техніка для вирішення проблеми "схлопування" контейнера</li>
+            <li>Float був основним інструментом для макетів до появи Flexbox та Grid</li>
+            <li>Сьогодні float рідше використовується для макетів, але корисний для обтікання зображень</li>
+        </ul>
+    </div>
+</body>
+</html>
+

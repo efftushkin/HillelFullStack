@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS властивості: display та box-sizing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .demo-box {
+            background-color: #e3f2fd;
+            border: 3px solid #2196f3;
+            padding: 15px;
+            margin: 10px;
+        }
+        
+        /* Display: block */
+        .display-block {
+            display: block;
+            background-color: #ffebee;
+            border: 2px solid #f44336;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        /* Display: inline */
+        .display-inline {
+            display: inline;
+            background-color: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        /* Display: inline-block */
+        .display-inline-block {
+            display: inline-block;
+            background-color: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 10px;
+            margin: 5px;
+            width: 150px;
+        }
+
+        /* Display: flex */
+        .display-flex {
+            display: flex;
+            gap: 10px;
+            background-color: #f3e5f5;
+            border: 2px solid #9c27b0;
+            padding: 15px;
+        }
+
+        .flex-item {
+            background-color: #ce93d8;
+            padding: 20px;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Display: grid */
+        .display-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background-color: #e0f2f1;
+            border: 2px solid #009688;
+            padding: 15px;
+        }
+
+        .grid-item {
+            background-color: #80cbc4;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Display: none */
+        .display-none {
+            display: none;
+        }
+
+        /* Box-sizing demonstration */
+        .box-content-box {
+            box-sizing: content-box;
+            width: 200px;
+            padding: 20px;
+            border: 5px solid #3f51b5;
+            background-color: #c5cae9;
+            margin: 10px 0;
+        }
+
+        .box-border-box {
+            box-sizing: border-box;
+            width: 200px;
+            padding: 20px;
+            border: 5px solid #3f51b5;
+            background-color: #c5cae9;
+            margin: 10px 0;
+        }
+        
+        .info {
+            background-color: #fff9c4;
+            padding: 10px;
+            border-left: 4px solid #fbc02d;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Вивчення CSS властивостей</h1>
+    
+    <div class="section">
+        <h2>1. Display: block</h2>
+        <p class="info">Блокові елементи займають всю доступну ширину та починаються з нового рядка.</p>
+        <span class="display-block">Span з display: block</span>
+        <span class="display-block">Ще один span з display: block</span>
+        <span class="display-block">Третій span з display: block</span>
+    </div>
+    
+    <div class="section">
+        <h2>2. Display: inline</h2>
+        <p class="info">Інлайнові елементи займають тільки необхідну ширину і не переносяться на новий рядок.</p>
+        <div class="display-inline">Div з display: inline</div>
+        <div class="display-inline">Ще один div</div>
+        <div class="display-inline">І ще один</div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Display: inline-block</h2>
+        <p class="info">Поєднує властивості inline та block: елементи розміщуються в рядку, але можна задати ширину та висоту.</p>
+        <div class="display-inline-block">Блок 1</div>
+        <div class="display-inline-block">Блок 2</div>
+        <div class="display-inline-block">Блок 3</div>
+    </div>
+
+    <div class="section">
+        <h2>4. Display: flex</h2>
+        <p class="info">Flexbox дозволяє легко створювати гнучкі макети з автоматичним розподілом простору.</p>
+        <div class="display-flex">
+            <div class="flex-item">Flex елемент 1</div>
+            <div class="flex-item">Flex елемент 2</div>
+            <div class="flex-item">Flex елемент 3</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. Display: grid</h2>
+        <p class="info">Grid дозволяє створювати двовимірні макети з рядками та колонками.</p>
+        <div class="display-grid">
+            <div class="grid-item">1</div>
+            <div class="grid-item">2</div>
+            <div class="grid-item">3</div>
+            <div class="grid-item">4</div>
+            <div class="grid-item">5</div>
+            <div class="grid-item">6</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. Display: none</h2>
+        <p class="info">Елемент повністю видаляється з потоку документа і не займає місця.</p>
+        <div class="demo-box">Цей елемент видимий</div>
+        <div class="demo-box display-none">Цей елемент прихований (display: none)</div>
+        <div class="demo-box">Цей елемент також видимий</div>
+    </div>
+
+    <div class="section">
+        <h2>7. Box-sizing: content-box (за замовчуванням)</h2>
+        <p class="info">
+            Width та height застосовуються тільки до вмісту. Padding та border додаються зверху.<br>
+            Загальна ширина = width + padding + border = 200px + 40px + 10px = 250px
+        </p>
+        <div class="box-content-box">
+            Width: 200px<br>
+            Padding: 20px<br>
+            Border: 5px<br>
+            <strong>Загальна ширина: 250px</strong>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. Box-sizing: border-box</h2>
+        <p class="info">
+            Width та height включають padding та border.<br>
+            Загальна ширина = width = 200px (padding та border включені)
+        </p>
+        <div class="box-border-box">
+            Width: 200px<br>
+            Padding: 20px<br>
+            Border: 5px<br>
+            <strong>Загальна ширина: 200px</strong>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Висновки</h2>
+        <ul>
+            <li><strong>display: block</strong> - елемент займає всю ширину</li>
+            <li><strong>display: inline</strong> - елемент в потоці тексту</li>
+            <li><strong>display: inline-block</strong> - в потоці, але з можливістю задати розміри</li>
+            <li><strong>display: flex</strong> - гнучкий одновимірний макет</li>
+            <li><strong>display: grid</strong> - двовимірна сітка</li>
+            <li><strong>display: none</strong> - елемент прихований</li>
+            <li><strong>box-sizing: content-box</strong> - розміри без padding/border</li>
+            <li><strong>box-sizing: border-box</strong> - розміри включають padding/border (зручніше!)</li>
+        </ul>
+    </div>
+</body>
+</html>
+

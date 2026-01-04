@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Експерименти з Overflow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 4px solid #2196f3;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        /* Base container */
+        .container {
+            width: 300px;
+            height: 150px;
+            border: 3px solid #333;
+            background-color: #f0f0f0;
+            margin: 20px 0;
+            padding: 10px;
+        }
+
+        /* Overflow: visible (default) */
+        .overflow-visible {
+            overflow: visible;
+            background-color: #ffebee;
+        }
+
+        /* Overflow: hidden */
+        .overflow-hidden {
+            overflow: hidden;
+            background-color: #e8f5e9;
+        }
+
+        /* Overflow: scroll */
+        .overflow-scroll {
+            overflow: scroll;
+            background-color: #e3f2fd;
+        }
+
+        /* Overflow: auto */
+        .overflow-auto {
+            overflow: auto;
+            background-color: #fff3e0;
+        }
+
+        /* Overflow-x and overflow-y */
+        .overflow-x-scroll {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            background-color: #f3e5f5;
+        }
+
+        .overflow-y-scroll {
+            overflow-x: hidden;
+            overflow-y: scroll;
+            background-color: #e0f2f1;
+        }
+
+        /* Overflowing content */
+        .long-content {
+            width: 500px;
+            line-height: 1.6;
+        }
+        
+        .tall-content {
+            line-height: 2;
+        }
+        
+        .wide-content {
+            width: 600px;
+            white-space: nowrap;
+        }
+        
+        /* Image example */
+        .image-box {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #666;
+            margin: 20px 0;
+        }
+
+        .large-image {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .code-example {
+            background-color: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Експерименти з Overflow</h1>
+    
+    <div class="section">
+        <h2>1. Overflow: visible (за замовчуванням)</h2>
+        <p class="info">Контент виходить за межі контейнера і залишається видимим.</p>
+        
+        <div class="container overflow-visible">
+            <div class="long-content">
+                Це дуже довгий текст, який виходить за межі контейнера. З overflow: visible 
+                контент просто виходить за межі і може накладатися на інші елементи. 
+                Це поведінка за замовчуванням. Зверніть увагу, як текст виходить за межі 
+                сірого контейнера.
+            </div>
+        </div>
+        
+        <div class="code-example">overflow: visible;</div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Overflow: hidden</h2>
+        <p class="info">Контент, що виходить за межі, обрізається і стає невидимим.</p>
+        
+        <div class="container overflow-hidden">
+            <div class="long-content">
+                Це дуже довгий текст, який виходить за межі контейнера. З overflow: hidden 
+                весь контент, що виходить за межі контейнера, просто обрізається і стає 
+                невидимим. Це корисно, коли потрібно приховати зайвий контент без можливості 
+                прокрутки. Частина цього тексту буде обрізана.
+            </div>
+        </div>
+        
+        <div class="code-example">overflow: hidden;</div>
+    </div>
+
+    <div class="section">
+        <h2>3. Overflow: scroll</h2>
+        <p class="info">Завжди показує смуги прокрутки, навіть якщо контент не переповнює контейнер.</p>
+
+        <div class="container overflow-scroll">
+            <div class="tall-content">
+                Це текст у контейнері з overflow: scroll. Зверніть увагу, що смуги прокрутки
+                з'являються завжди (і вертикальна, і горизонтальна), навіть якщо вони не потрібні.
+                Це може бути корисно для збереження консистентності макету, але часто виглядає
+                надлишково. Прокрутіть вниз, щоб побачити більше тексту. Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+            </div>
+        </div>
+
+        <div class="code-example">overflow: scroll;</div>
+    </div>
+
+    <div class="section">
+        <h2>4. Overflow: auto</h2>
+        <p class="info">Смуги прокрутки з'являються тільки тоді, коли контент переповнює контейнер.</p>
+
+        <div class="container overflow-auto">
+            <div class="tall-content">
+                Це текст у контейнері з overflow: auto. Смуги прокрутки з'являються автоматично
+                тільки тоді, коли контент не вміщується в контейнер. Це найбільш розумний варіант
+                для більшості випадків. Прокрутіть вниз, щоб побачити весь текст. Lorem ipsum dolor
+                sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.
+            </div>
+        </div>
+
+        <div class="code-example">overflow: auto;</div>
+    </div>
+
+    <div class="section">
+        <h2>5. Overflow-x: scroll (тільки горизонтальна прокрутка)</h2>
+        <p class="info">Контролює переповнення тільки по горизонталі.</p>
+
+        <div class="container overflow-x-scroll">
+            <div class="wide-content">
+                Це дуже широкий текст, який не переноситься на новий рядок (white-space: nowrap).
+                Тільки горизонтальна смуга прокрутки активна. Прокрутіть вправо, щоб побачити весь текст.
+            </div>
+        </div>
+
+        <div class="code-example">overflow-x: scroll; overflow-y: hidden;</div>
+    </div>
+
+    <div class="section">
+        <h2>6. Overflow-y: scroll (тільки вертикальна прокрутка)</h2>
+        <p class="info">Контролює переповнення тільки по вертикалі.</p>
+
+        <div class="container overflow-y-scroll">
+            <div class="tall-content">
+                Це текст у контейнері з overflow-y: scroll. Тільки вертикальна смуга прокрутки
+                активна. Горизонтальне переповнення буде приховане. Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </div>
+        </div>
+
+        <div class="code-example">overflow-x: hidden; overflow-y: scroll;</div>
+    </div>
+
+    <div class="section">
+        <h2>7. Практичний приклад: обрізка зображення</h2>
+        <p class="info">Overflow: hidden часто використовується для обрізки зображень.</p>
+
+        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+            <div>
+                <h3>Без overflow (visible)</h3>
+                <div class="image-box" style="overflow: visible;">
+                    <div class="large-image">300x300px</div>
+                </div>
+            </div>
+
+            <div>
+                <h3>З overflow: hidden</h3>
+                <div class="image-box" style="overflow: hidden;">
+                    <div class="large-image">300x300px</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>8. Практичний приклад: чат або лог</h2>
+        <p class="info">Overflow: auto ідеально підходить для чатів, логів та інших динамічних списків.</p>
+
+        <div class="container overflow-auto" style="height: 200px; background-color: #263238; color: #aed581; font-family: monospace;">
+            <div style="padding: 10px;">
+                [10:00:01] Система запущена<br>
+                [10:00:05] Підключення до сервера...<br>
+                [10:00:07] Підключення успішне<br>
+                [10:00:10] Завантаження даних...<br>
+                [10:00:15] Дані завантажено<br>
+                [10:00:20] Користувач увійшов<br>
+                [10:00:25] Обробка запиту #1<br>
+                [10:00:30] Обробка запиту #2<br>
+                [10:00:35] Обробка запиту #3<br>
+                [10:00:40] Всі запити оброблено<br>
+                [10:00:45] Система готова до роботи<br>
+                [10:00:50] Очікування команд...<br>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Висновки</h2>
+        <ul>
+            <li><strong>overflow: visible</strong> - контент виходить за межі (за замовчуванням)</li>
+            <li><strong>overflow: hidden</strong> - контент обрізається, прокрутки немає</li>
+            <li><strong>overflow: scroll</strong> - смуги прокрутки завжди видимі</li>
+            <li><strong>overflow: auto</strong> - смуги з'являються тільки при необхідності (найкраще!)</li>
+            <li><strong>overflow-x/y</strong> - окремий контроль для горизонталі та вертикалі</li>
+            <li>Overflow корисний для: обрізки зображень, створення прокручуваних областей, приховування контенту</li>
+        </ul>
+    </div>
+</body>
+</html>
+

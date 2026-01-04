@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Позиціонування елементів</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding-top: 80px; /* For fixed header */
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 4px solid #2196f3;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        /* Position: static (default) */
+        .static-box {
+            position: static;
+            background-color: #ffebee;
+            border: 3px solid #f44336;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        /* Position: relative */
+        .relative-container {
+            position: relative;
+            background-color: #f0f0f0;
+            border: 2px dashed #666;
+            padding: 20px;
+            margin: 20px 0;
+            height: 200px;
+        }
+
+        .relative-box {
+            position: relative;
+            top: 20px;
+            left: 30px;
+            background-color: #e8f5e9;
+            border: 3px solid #4caf50;
+            padding: 15px;
+            width: 200px;
+        }
+
+        /* Position: absolute */
+        .absolute-container {
+            position: relative;
+            background-color: #f0f0f0;
+            border: 2px dashed #666;
+            padding: 20px;
+            margin: 20px 0;
+            height: 250px;
+        }
+
+        .absolute-box {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background-color: #fff3e0;
+            border: 3px solid #ff9800;
+            padding: 15px;
+            width: 180px;
+        }
+
+        .absolute-box-2 {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: #fce4ec;
+            border: 3px solid #e91e63;
+            padding: 15px;
+            width: 180px;
+        }
+
+        /* Position: fixed */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .fixed-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .fixed-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Position: sticky */
+        .sticky-nav {
+            position: sticky;
+            top: 80px; /* Below fixed header */
+            background-color: #009688;
+            color: white;
+            padding: 15px;
+            margin: 20px -20px;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .content-block {
+            background-color: #e0f2f1;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 300px;
+        }
+        
+        .demo-box {
+            background-color: #b2dfdb;
+            border: 2px solid #00796b;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        
+        .code-example {
+            background-color: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Header -->
+    <div class="fixed-header">
+        <h1 style="margin: 0;">Позиціонування елементів (Fixed Header)</h1>
+        <p style="margin: 5px 0 0 0;">Цей header завжди залишається вгорі при прокрутці</p>
+    </div>
+
+    <!-- Fixed Button -->
+    <button class="fixed-button" title="Прокрутити вгору">↑</button>
+
+    <div class="section">
+        <h2>1. Position: static (за замовчуванням)</h2>
+        <p class="info">
+            Елементи розміщуються в нормальному потоці документа.
+            Властивості top, right, bottom, left не працюють.
+        </p>
+
+        <div class="static-box">
+            Це елемент з position: static (за замовчуванням).
+            Він розміщується в нормальному потоці документа.
+        </div>
+        <div class="static-box">
+            Ще один static елемент. Вони йдуть один за одним.
+        </div>
+
+        <div class="code-example">position: static; /* за замовчуванням */</div>
+    </div>
+
+    <div class="section">
+        <h2>2. Position: relative</h2>
+        <p class="info">
+            Елемент зміщується відносно свого початкового положення в потоці.
+            Інші елементи не займають його місце.
+        </p>
+
+        <div class="relative-container">
+            <div style="background-color: #ddd; padding: 10px; margin-bottom: 10px;">
+                Звичайний елемент (static)
+            </div>
+            <div class="relative-box">
+                Position: relative<br>
+                top: 20px; left: 30px;<br>
+                Зміщений від початкового положення
+            </div>
+            <div style="background-color: #ddd; padding: 10px; margin-top: 10px;">
+                Наступний елемент (static) - не зміщується
+            </div>
+        </div>
+
+        <div class="code-example">position: relative;<br>top: 20px;<br>left: 30px;</div>
+    </div>
+
+    <div class="section">
+        <h2>3. Position: absolute</h2>
+        <p class="info">
+            Елемент виймається з потоку і позиціонується відносно найближчого
+            позиціонованого предка (position: relative/absolute/fixed).
+        </p>
+
+        <div class="absolute-container">
+            <div style="background-color: #ddd; padding: 10px;">
+                Контейнер з position: relative (сірий фон)
+            </div>
+
+            <div class="absolute-box">
+                Absolute<br>
+                top: 30px<br>
+                right: 30px
+            </div>
+
+            <div class="absolute-box-2">
+                Absolute<br>
+                bottom: 20px<br>
+                left: 20px
+            </div>
+        </div>
+
+        <div class="code-example">
+            /* Контейнер */<br>
+            position: relative;<br><br>
+            /* Елемент */<br>
+            position: absolute;<br>
+            top: 30px;<br>
+            right: 30px;
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>4. Position: fixed</h2>
+        <p class="info">
+            Елемент позиціонується відносно вікна браузера і залишається на місці при прокрутці.
+        </p>
+
+        <div style="background-color: #e3f2fd; padding: 15px; border-radius: 4px;">
+            <p><strong>Приклади fixed елементів на цій сторінці:</strong></p>
+            <ul>
+                <li><strong>Синій header вгорі</strong> - position: fixed; top: 0;</li>
+                <li><strong>Червона кнопка внизу справа</strong> - position: fixed; bottom: 30px; right: 30px;</li>
+            </ul>
+            <p>Прокрутіть сторінку вниз, щоб побачити, як ці елементи залишаються на місці!</p>
+        </div>
+
+        <div class="code-example">
+            position: fixed;<br>
+            top: 0;<br>
+            left: 0;<br>
+            right: 0;
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>5. Position: sticky</h2>
+        <p class="info">
+            Елемент поводиться як relative до певного моменту прокрутки,
+            потім "приклеюється" і поводиться як fixed.
+        </p>
+
+        <div style="background-color: #fff3e0; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+            <p><strong>Інструкція:</strong> Прокрутіть сторінку вниз. Зелена навігація нижче
+            спочатку прокручується разом зі сторінкою, але коли досягає верху (під синім header),
+            вона "приклеюється" і залишається на місці.</p>
+        </div>
+
+        <div class="sticky-nav">
+            <strong>📌 Sticky Navigation</strong> - Я "приклеююсь" при прокрутці!
+        </div>
+
+        <div class="content-block">
+            <h3>Блок контенту 1</h3>
+            <p>Прокрутіть вниз, щоб побачити sticky ефект...</p>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+        </div>
+
+        <div class="content-block">
+            <h3>Блок контенту 2</h3>
+            <p>Продовжуйте прокручувати...</p>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+        </div>
+
+        <div class="content-block">
+            <h3>Блок контенту 3</h3>
+            <p>Зверніть увагу, як sticky навігація залишається вгорі!</p>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+            <div class="demo-box">Контент</div>
+        </div>
+
+        <div class="code-example">
+            position: sticky;<br>
+            top: 80px; /* відстань від верху, де елемент "приклеюється" */
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>6. Порівняння: Fixed vs Sticky</h2>
+
+        <div style="background-color: #f3e5f5; padding: 20px; border-radius: 4px; margin: 20px 0;">
+            <h3>Position: Fixed</h3>
+            <ul>
+                <li>✓ Завжди залишається на одному місці відносно вікна браузера</li>
+                <li>✓ Не прокручується разом зі сторінкою</li>
+                <li>✓ Виймається з нормального потоку документа</li>
+                <li>✓ Позиціонується відносно viewport (вікна браузера)</li>
+                <li>✓ Ідеально для: headers, footers, кнопок "вгору", модальних вікон</li>
+            </ul>
+            <p><strong>Приклад:</strong> Синій header вгорі сторінки</p>
+        </div>
+
+        <div style="background-color: #e0f2f1; padding: 20px; border-radius: 4px; margin: 20px 0;">
+            <h3>Position: Sticky</h3>
+            <ul>
+                <li>✓ Спочатку прокручується разом зі сторінкою (як relative)</li>
+                <li>✓ "Приклеюється" при досягненні заданої позиції (як fixed)</li>
+                <li>✓ Залишається в потоці документа</li>
+                <li>✓ Позиціонується відносно найближчого scrolling ancestor</li>
+                <li>✓ Ідеально для: навігації в секціях, заголовків таблиць, sidebar меню</li>
+            </ul>
+            <p><strong>Приклад:</strong> Зелена навігація, яка "приклеюється" при прокрутці</p>
+        </div>
+
+        <div style="background-color: #fff9c4; padding: 20px; border-radius: 4px;">
+            <h3>Ключова різниця:</h3>
+            <p>
+                <strong>Fixed</strong> - елемент ЗАВЖДИ на одному місці відносно вікна.<br>
+                <strong>Sticky</strong> - елемент прокручується до певної точки, потім "приклеюється".
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>7. Z-index (порядок накладання)</h2>
+        <p class="info">
+            Z-index контролює порядок накладання позиціонованих елементів.
+            Працює тільки з position: relative, absolute, fixed, sticky.
+        </p>
+
+        <div style="position: relative; height: 250px; background-color: #f0f0f0; padding: 20px;">
+            <div style="position: absolute; top: 20px; left: 20px; width: 150px; height: 150px;
+                        background-color: #f44336; color: white; padding: 15px; z-index: 1;">
+                Червоний<br>z-index: 1
+            </div>
+
+            <div style="position: absolute; top: 60px; left: 80px; width: 150px; height: 150px;
+                        background-color: #4caf50; color: white; padding: 15px; z-index: 3;">
+                Зелений<br>z-index: 3<br>(найвищий)
+            </div>
+
+            <div style="position: absolute; top: 100px; left: 140px; width: 150px; height: 150px;
+                        background-color: #2196f3; color: white; padding: 15px; z-index: 2;">
+                Синій<br>z-index: 2
+            </div>
+        </div>
+
+        <div class="code-example">
+            position: absolute;<br>
+            z-index: 3; /* вищий z-index = зверху */
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Висновки</h2>
+        <ul>
+            <li><strong>static</strong> - нормальний потік документа (за замовчуванням)</li>
+            <li><strong>relative</strong> - зміщення відносно початкового положення</li>
+            <li><strong>absolute</strong> - позиціонування відносно найближчого позиціонованого предка</li>
+            <li><strong>fixed</strong> - позиціонування відносно вікна браузера, не прокручується</li>
+            <li><strong>sticky</strong> - гібрид relative та fixed, "приклеюється" при прокрутці</li>
+            <li><strong>z-index</strong> - контролює порядок накладання елементів</li>
+        </ul>
+
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 4px; margin-top: 20px;">
+            <p><strong>💡 Порада:</strong> Прокрутіть цю сторінку вгору і вниз кілька разів,
+            щоб побачити різницю між fixed (синій header і червона кнопка) та sticky (зелена навігація)!</p>
+        </div>
+    </div>
+
+    <div style="height: 500px; background: linear-gradient(180deg, #e3f2fd 0%, #f3e5f5 100%);
+                display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 20px;">
+        <div style="text-align: center; padding: 40px;">
+            <h2>Додатковий контент для прокрутки</h2>
+            <p>Прокрутіть вгору, щоб побачити всі ефекти позиціонування!</p>
+            <p style="font-size: 48px;">⬆️</p>
+        </div>
+    </div>
+
+    <script>
+        // Додаємо функціональність кнопці "вгору"
+        document.querySelector('.fixed-button').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
+

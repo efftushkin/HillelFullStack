@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Домашнє завдання 7 - CSS Основи</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .card-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .card h2 {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+        
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .card a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card a:hover {
+            opacity: 0.9;
+        }
+        
+        .topics {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .topics h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .topics ul {
+            list-style: none;
+        }
+        
+        .topics li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+        
+        .topics li:last-child {
+            border-bottom: none;
+        }
+        
+        .topics li::before {
+            content: "✓ ";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Домашнє завдання 7</h1>
+        <p class="subtitle">CSS Основи: Блокова модель, позиціонування та властивості</p>
+        
+        <div class="grid">
+            <div class="card">
+                <div class="card-number">2</div>
+                <h2>Блокові та інлайнові елементи</h2>
+                <p>Робота з основними тегами &lt;div&gt; та &lt;span&gt;. Експерименти з відображенням блокових та інлайнових елементів.</p>
+                <a href="02-block-inline.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">3</div>
+                <h2>Normalize.css</h2>
+                <p>Демонстрація normalize.css - сучасного підходу до нормалізації стилів браузера з порівнянням та описом.</p>
+                <a href="03-normalize.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">3</div>
+                <h2>Reset.css</h2>
+                <p>Демонстрація reset.css - радикального підходу до скидання всіх стилів браузера з порівнянням та описом.</p>
+                <a href="03-reset.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">4</div>
+                <h2>CSS властивості</h2>
+                <p>Вивчення властивостей display (block, inline, flex, grid) та box-sizing (content-box, border-box).</p>
+                <a href="04-css-properties.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">5</div>
+                <h2>Float та Clear</h2>
+                <p>Практика з float для обтікання елементів та використання clear для контролю обтікання.</p>
+                <a href="05-float-clear.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">6</div>
+                <h2>Overflow</h2>
+                <p>Експерименти з властивістю overflow для управління відображенням вмісту, що виходить за межі контейнера.</p>
+                <a href="06-overflow.html">Відкрити →</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-number">7</div>
+                <h2>Позиціонування</h2>
+                <p>Різні типи позиціонування (static, relative, absolute, fixed, sticky) з демонстрацією різниці між fixed та sticky.</p>
+                <a href="07-positioning.html">Відкрити →</a>
+            </div>
+        </div>
+        
+        <div class="topics">
+            <h2>Вивчені теми</h2>
+            <ul>
+                <li>Блокові елементи (div) та інлайнові елементи (span)</li>
+                <li>Нормалізація стилів: normalize.css vs reset.css</li>
+                <li>Властивість display: block, inline, inline-block, flex, grid, none</li>
+                <li>Властивість box-sizing: content-box vs border-box</li>
+                <li>Float та clear для обтікання елементів</li>
+                <li>Clearfix техніка для вирішення проблеми "схлопування"</li>
+                <li>Overflow: visible, hidden, scroll, auto</li>
+                <li>Overflow-x та overflow-y для окремого контролю</li>
+                <li>Position: static, relative, absolute, fixed, sticky</li>
+                <li>Різниця між fixed та sticky позиціонуванням</li>
+                <li>Z-index для контролю порядку накладання елементів</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>Hillel Full Stack Course | Homework 7 | 2026</p>
+        </div>
+    </div>
+</body>
+</html>
+

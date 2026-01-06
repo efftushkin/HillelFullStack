@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Float Layout - Практика</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1 class="title">Float Layout - Практичні приклади</h1>
+
+    <!-- Variant 1: one block on the left, another on the right -->
+    <div class="section">
+        <h2>1. Один блок ліворуч, другий праворуч</h2>
+        <div class="container">
+            <div class="block left">Лівий блок</div>
+            <div class="block right">Правий блок</div>
+        </div>
+    </div>
+
+    <!-- Variant 2: one block on the left, several blocks on the right -->
+    <div class="section">
+        <h2>2. Один блок ліворуч, кілька блоків праворуч</h2>
+        <div class="container">
+            <div class="block left">Лівий блок</div>
+            <div class="block right margin-left">Правий перший блок</div>
+            <div class="block right margin-left">Правий другий блок</div>
+            <div class="block right margin-left">Правий третій блок</div>
+        </div>
+    </div>
+
+    <!-- Variant 3: two blocks on the left, two on the right -->
+    <div class="section">
+        <h2>3. Два блоки ліворуч, два праворуч</h2>
+        <div class="container">
+            <div class="block left margin-right">Лівий перший блок</div>
+            <div class="block left margin-right">Лівий другий блок</div>
+            <div class="block right margin-left">Правий перший блок</div>
+            <div class="block right margin-left">Правий другий блок</div>
+        </div>
+    </div>
+
+    <!-- Variant 4: three blocks on the right (two of them stacked) -->
+    <div class="section">
+        <h2>4. Три блоки праворуч (два з них один під одним)</h2>
+        <div class="container">
+            <div class="wrapper right margin-left">
+                <div class="block right">Правий перший блок</div>
+                <div class="block right">Правий другий блок</div>
+            </div>
+            <div class="block right margin-left higher">Правий третій блок</div>
+        </div>
+    </div>
+
+    <!-- Variant 5: three blocks centered (two of them stacked) -->
+    <div class="section">
+        <h2>5. Три блоки по центру (два з них один під одним)</h2>
+        <div class="container variant5">
+            <div class="wrapper">
+                <div class="block left">Лівий блок</div>
+                <div class="block right">Правий перший блок</div>
+                <div class="block right">Правий другий блок</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

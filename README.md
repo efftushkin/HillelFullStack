@@ -58,7 +58,7 @@ This repository will be continuously updated with homework assignments as the co
   - Centered layout with flexbox
 - **Files**: `index.html`, `style.css`
 
-#### HW7 - Експерименти з блоковою моделлю (Box Model Experiments)
+#### HW7 - CSS Box Model Experiments
 - **Location**: `hw7/`
 - **Description**: Comprehensive CSS box model experiments with interactive demonstrations (in Ukrainian)
 - **Topics**: Box model, positioning, display properties, float, overflow
@@ -75,6 +75,23 @@ This repository will be continuously updated with homework assignments as the co
   - Detailed explanations in Ukrainian
   - Visual demonstrations of each concept
   - Comparison of normalize.css vs reset.css
+
+#### HW8 - Float Layout Practice
+- **Location**: `hw8/`
+- **Description**: Practical exercises with CSS float layouts (in Ukrainian)
+- **Topics**: Float positioning, clearfix, layout techniques
+- **Layout Variants**:
+  1. One block left, one block right
+  2. One block left, multiple blocks right
+  3. Two blocks left, two blocks right
+  4. Three blocks right (two stacked)
+  5. Three blocks centered (two stacked)
+- **Features**:
+  - Clearfix technique implementation
+  - Color-coded blocks for visual clarity
+  - Responsive block sizing
+  - Margin and spacing control
+- **Files**: `float-layout.html`, `styles.css`
 
 ## Technologies Used
 

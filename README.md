@@ -107,6 +107,21 @@ This repository will be continuously updated with homework assignments as the co
   - BigInt arithmetic operations
 - **File**: `main.js`
 
+#### HW19 - JavaScript Functions
+- **Location**: `hw19/`
+- **Description**: Introduction to JavaScript functions (in Ukrainian)
+- **Topics**: Function declaration, parameters, return values, Math methods, BigInt operations
+- **Exercises**:
+  1. `getRandomInt(min, max)` - Generate random integers in a range using `Math.random()` and `Math.floor()`
+  2. `greetByName(msg, name)` - String concatenation function for personalized greetings
+  3. `sumBigIntegers(numStr1, numStr2)` - Convert strings to BigInt and perform addition
+- **Features**:
+  - Practical function implementations
+  - Working with Math object methods
+  - String to BigInt conversion
+  - Understanding uniform distribution in random number generation
+- **Files**: `getRandomInt.js`, `greetByName.js`, `sumBigIntegers.js`
+
 ## Technologies Used
 
 - HTML5
@@ -119,7 +134,19 @@ This repository will be continuously updated with homework assignments as the co
 
 ## How to View
 
-Open any `index.html` file in a web browser to view the respective homework assignment.
+### HTML/CSS Assignments (HW1-HW8)
+Open any `index.html` or `.html` file in a web browser to view the respective homework assignment.
+
+### JavaScript Assignments (HW18+)
+Run JavaScript files using Node.js:
+```bash
+node hw18/main.js
+node hw19/getRandomInt.js
+node hw19/greetByName.js
+node hw19/sumBigIntegers.js
+```
+
+Or open the browser console and copy-paste the code to see the output.
 
 ## Author
 

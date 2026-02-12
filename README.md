@@ -93,10 +93,25 @@ This repository will be continuously updated with homework assignments as the co
   - Margin and spacing control
 - **Files**: `float-layout.html`, `styles.css`
 
+#### HW18 - JavaScript Basics: Variables and Data Types
+- **Location**: `hw18/`
+- **Description**: Introduction to JavaScript fundamentals (in Ukrainian)
+- **Topics**: Variables, data types, type conversion, BigInt
+- **Exercises**:
+  1. Creating variables with different data types (number, string, boolean, array, object)
+  2. Formatting numbers with `toFixed()` method
+  3. Working with BigInt data type
+- **Features**:
+  - Practical examples of JavaScript primitives
+  - Type conversion demonstrations
+  - BigInt arithmetic operations
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5
 - CSS3
+- JavaScript (ES6+)
 
 ## Development Tools
 

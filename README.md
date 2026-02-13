@@ -122,6 +122,28 @@ This repository will be continuously updated with homework assignments as the co
   - Understanding uniform distribution in random number generation
 - **Files**: `getRandomInt.js`, `greetByName.js`, `sumBigIntegers.js`
 
+#### HW20 - JavaScript Advanced: Objects, Loops, and Control Flow
+- **Location**: `hw20/`
+- **Description**: Comprehensive JavaScript exercises covering objects, methods, loops, and control structures (in Ukrainian)
+- **Topics**: Objects, methods, loops (for/while), switch/case, ternary operator, callbacks, logical operators
+- **Exercises**:
+  1. Create object with properties and methods (`userObj.fullName()`)
+  2. `defUpperStr(str)` - Default parameters using logical OR operator
+  3. `evenFn(n)` - Generate array of even numbers using `for` loop
+  4. `weekFn(n)` - Day of week function using `switch/case` with validation
+  5. `ageClassification(n)` - Age classification using ternary operator chains
+  6. `oddFn(n)` - Generate array of odd numbers using `while` loop
+  7. `mainFunc(a, b, callback)` - Callback functions (`cbRandom`, `cbPow`, `cbAdd`)
+- **Features**:
+  - Object methods with `this` keyword
+  - Type checking and validation
+  - Different loop types (for, while)
+  - Switch/case statements
+  - Ternary operator chains
+  - Callback function pattern
+  - Logical operators for default values
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

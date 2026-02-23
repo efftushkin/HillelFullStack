@@ -144,6 +144,24 @@ This repository will be continuously updated with homework assignments as the co
   - Logical operators for default values
 - **File**: `main.js`
 
+#### HW21 - JavaScript Advanced: Closures, Currying, and Higher-Order Functions
+- **Location**: `hw21/`
+- **Description**: Advanced JavaScript concepts with closures, currying, and higher-order functions (in Ukrainian)
+- **Topics**: Closures, currying, higher-order functions, nested functions, ES6 modules
+- **Exercises**:
+  1. `curriedAdd(a)(b)(c)` - Curried function for sequential addition of three numbers
+  2. `curriedDomain(protocol)(domainName)(tld)` - Build full domain name using currying
+  3. `modifyFunction(originalFunc, multiplier)` - Higher-order function to modify behavior
+  4. `outerFunction(arg1)(arg2)(arg3)` - Three-level nested functions with multiplication
+- **Features**:
+  - Deep understanding of closures and scope
+  - Currying pattern implementation
+  - Higher-order functions
+  - Function composition
+  - ES6 module exports
+  - Comprehensive test files for each exercise
+- **Files**: `curriedAdd.js`, `curriedDomain.js`, `modifyFunction.js`, `nestedFunctions.js` (with corresponding `.test.js` files)
+
 ## Technologies Used
 
 - HTML5

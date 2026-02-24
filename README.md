@@ -162,6 +162,26 @@ This repository will be continuously updated with homework assignments as the co
   - Comprehensive test files for each exercise
 - **Files**: `curriedAdd.js`, `curriedDomain.js`, `modifyFunction.js`, `nestedFunctions.js` (with corresponding `.test.js` files)
 
+#### HW22 - JavaScript Advanced: Closures, Recursion, and Function Methods
+- **Location**: `hw22/`
+- **Description**: Advanced JavaScript exercises focusing on closures, IIFE, recursion, and function methods (in Ukrainian)
+- **Topics**: Closures, IIFE (Immediately Invoked Function Expression), recursion, `apply()`, `bind()`, arrow functions
+- **Exercises**:
+  1. `counter(n)` - Counter with closure and optional reset functionality
+  2. `counterFactory` - Object with methods (`value()`, `increment()`, `decrement()`) using closures
+  3. `myPow(a, b, myPrint)` - Recursive power calculation with callback function
+  4. `myMax(arr)` - Find maximum value using `Math.max.apply()`
+  5. `myDouble(n)` and `myTriple(n)` - Partial application using `bind()`
+- **Features**:
+  - IIFE pattern for encapsulation
+  - Private variables with closures
+  - Recursive algorithms (power calculation with negative exponents)
+  - Function methods: `apply()` and `bind()`
+  - Partial application pattern
+  - Arrow function syntax
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

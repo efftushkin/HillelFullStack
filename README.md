@@ -182,6 +182,30 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW23 - JavaScript: Array Methods, Classes, and Constructor Functions
+- **Location**: `hw23/`
+- **Description**: JavaScript exercises covering array methods, ES6 classes, and constructor functions (in Ukrainian)
+- **Topics**: Array methods (`reduce`, `map`), ES6 classes, constructor functions, Date API, validation
+- **Exercises**:
+  1. `sumArray(numbers)` - Calculate sum of array elements using `reduce()`
+  2. `doubleArrayElements(numbers)` - Double each element using `map()`
+  3. `SkillsManager` class - Manage skills list with validation
+     - `addSkill(skill)` - Add skill with string validation (min 2 characters)
+     - `getAllSkills()` - Return all skills
+  4. `DateCalculator` constructor function - Date manipulation utility
+     - `addDays(days)` - Add days to current date
+     - `subtractDays(days)` - Subtract days from current date
+     - `getResult()` - Return date in "YYYY-MM-DD" format
+- **Features**:
+  - Functional array methods (`reduce`, `map`)
+  - ES6 class syntax with constructor and methods
+  - Constructor function pattern with `new` keyword
+  - Input validation (type checking, length validation)
+  - Date API manipulation
+  - String formatting with `padStart()`
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

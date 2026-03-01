@@ -1,120 +1,91 @@
+console.log('#6. JavaScript homework example file')
+
 /*
  * #1
- *
- * Розробити функцію, яка використовує метод reduce масиву для обчислення суми усіх елементів масиву чисел.
- Функція повинна приймати масив чисел та повертати їх суму.
-*/
-
-function sumArray(numbers) {
-  return numbers.reduce((sum, num) => sum + num, 0);
-}
-
-// Використання функції
-const exampleArrayToSum = [1, 2, 3, 4, 5]
-const sum = sumArray(exampleArrayToSum)
-console.log('Сума елементів масиву:', sum) // Виведення суми
-
-
-/*
- * #2
- *
- * Розробити функцію, яка використовує метод map масиву для створення нового масиву, в якому кожен елемент буде вдвічі більшим за елементи вхідного масиву чисел.
-*/
-
-function doubleArrayElements(numbers) {
-  return numbers.map(num => num * 2);
-}
-
-// Використання функції
-const exampleArray = [1, 2, 3, 4, 5]
-const doubledArray = doubleArrayElements(exampleArray)
-console.log('Подвоєні елементи масиву:', doubledArray) // Виведення подвоєних елементів
-
-
-/*
- * #3
- *
- * Розробити клас `SkillsManager`, що відповідає за управління списком навичок. Клас повинен включати:
- * 1. Конструктор:
- * - Ініціалізує порожній масив `skills`, який буде використовуватися для зберігання навичок.
- * 2. Метод `addSkill(skill)`:
- * - Приймає один аргумент `skill` (рядок).
- * - Перевіряє, чи аргумент є рядком і має мінімум два символи.
- * - Якщо умови виконані, додає `skill` до масиву `skills` і повертає додану навичку.
- * - Якщо умови не виконані (навичка не є рядком або має менше двох символів), повертає `null`.
- * 3. Метод `getAllSkills()`:
- *   - Повертає поточний масив усіх навичок, збережених у класі.
- *
- * Загальні вимоги:
- * - Клас має бути модульним і здатним до використання в інших частинах програми, тому він повинен бути експортований.
- * - Клас має забезпечувати легке управління навичками, включаючи додавання нових навичок та отримання списку всіх наявних навичок.
- * - Код має бути написаний з урахуванням принципів чистого коду, забезпечуючи читабельність та легкість підтримки.
-*/
-
-class SkillsManager {
-  constructor() {
-    this.skills = [];
-  }
-
-  addSkill(skill) {
-    if (typeof skill === 'string' && skill.length >= 2) {
-      this.skills.push(skill);
-      return skill;
-    }
-    return null;
-  }
-
-  getAllSkills() {
-    return this.skills;
-  }
-}
-
-const skillsManager = new SkillsManager()
-
-console.log(skillsManager.addSkill('JavaScript'))
-console.log(skillsManager.addSkill('CSS'))
-console.log(skillsManager.getAllSkills())
-
-
-/*
- * #4
- * Задача: Калькулятор дат.
- * Завдання: Створити модуль на JavaScript, який імплементує функцію-конструктор DateCalculator для створення об'єктів, здатних керувати датами. Калькулятор дат має надавати такі можливості:
- * Додавання днів: Метод addDays приймає кількість днів як аргумент і додає цю кількість до поточної дати об'єкта.
- * Віднімання днів: Метод subtractDays приймає кількість днів як аргумент і віднімає цю кількість від поточної дати об'єкта.
- * Отримання результату: Метод getResult повертає поточну дату об'єкта у форматі "YYYY-MM-DD".
+ * Задача: Калькулятор калорійності продуктів через клас.
+ * Завдання: Розробити модуль на JavaScript, який імплементує клас CalorieCalculator. Клас має використовувати Map для управління даними про калорійність продуктів. Необхідно реалізувати наступні функціональності:
+ * Додавання продуктів: Метод addProduct приймає назву продукту та його калорійність, додаючи їх до колекції.
+ * Отримання калорійності продукту: Метод getProductCalories повертає калорійність продукту за його назвою. Якщо продукт не знайдено, повертає рядок 'Product not found'.
+ * Видалення продукту: Метод removeProduct видаляє продукт з колекції за назвою.
  *
  * Критерії перевірки:
- * В модулі має бути визначена функція-конструктор DateCalculator, яка ініціалізує об'єкт з початковою датою.
- * Мають бути реалізовані та доступні методи addDays, subtractDays, та getResult для екземплярів DateCalculator.
- * Об'єкти DateCalculator мають створюватися за допомогою ключового слова new і використання функції-конструктора.
+ * Клас CalorieCalculator має бути реалізований з використанням ключового слова class.
+ * Внутрішнє сховище продуктів має бути реалізоване за допомогою new Map().
+ * Наявність методів addProduct, getProductCalories, та removeProduct.
  */
 
-function DateCalculator(initialDate) {
-  this.currentDate = new Date(initialDate);
-
-  this.addDays = function(days) {
-    this.currentDate.setDate(this.currentDate.getDate() + days);
+class CalorieCalculator {
+  constructor() {
+    this.products = new Map()
   }
 
-  this.subtractDays = function(days) {
-    this.currentDate.setDate(this.currentDate.getDate() - days);
+  addProduct(productName, calories) {
+    this.products.set(productName, calories)
   }
 
-  this.getResult = function() {
-    const year = this.currentDate.getFullYear();
-    const month = String(this.currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(this.currentDate.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  getProductCalories(productName) {
+    if (this.products.has(productName)) {
+      return this.products.get(productName)
+    }
+    return 'Product not found'
+  }
+
+  removeProduct(productName) {
+    this.products.delete(productName)
   }
 }
 
 // Демонстрація використання
-const dateCalculator = new DateCalculator('2023-01-01')
-dateCalculator.addDays(5)
-console.log(dateCalculator.getResult()) // Виводить нову дату після додавання днів
+const calorieCalculator = new CalorieCalculator()
+calorieCalculator.addProduct('Apple', 52)
+calorieCalculator.addProduct('Banana', 89)
 
-dateCalculator.subtractDays(3)
-console.log(dateCalculator.getResult()) // Виводить нову дату після віднімання днів
+console.log(calorieCalculator.getProductCalories('Apple')) // 52
+console.log(calorieCalculator.getProductCalories('Banana')) // 89
 
-export { doubleArrayElements, sumArray, SkillsManager, DateCalculator }
+calorieCalculator.removeProduct('Apple')
+console.log(calorieCalculator.getProductCalories('Apple')) // Product not found
+
+/*
+ * #2
+ * Задача: Унікальні користувачі.
+ * Завдання: Реалізувати модуль на JavaScript у формі класу UniqueUsernames, який використовує Set для збереження унікальних імен користувачів. Клас має надавати можливість:
+ * Додавання імен користувачів: Метод addUser дозволяє додати нове ім'я до набору. Якщо ім'я вже існує, воно не буде додано повторно, зберігаючи унікальність імен у наборі.
+ * Перевірка наявності імені: Метод exists перевіряє, чи існує задане ім'я серед збережених унікальних імен.
+ * Отримання кількості унікальних імен: Метод count повертає кількість унікальних імен, збережених у наборі.
+ *
+ * Критерії перевірки:
+ * Наявність методів addUser, exists, count у класі UniqueUsernames.
+ * Використання конструкції class для створення класу UniqueUsernames.
+ * Застосування new Set() для внутрішнього сховища імен користувачів у конструкторі класу.
+ */
+
+class UniqueUsernames {
+  constructor() {
+    this.usernames = new Set()
+  }
+
+  addUser(username) {
+    this.usernames.add(username)
+  }
+
+  exists(username) {
+    return this.usernames.has(username)
+  }
+
+  count() {
+    return this.usernames.size
+  }
+}
+
+// Демонстрація використання
+const uniqueUsernames = new UniqueUsernames()
+uniqueUsernames.addUser('john_doe')
+uniqueUsernames.addUser('jane_doe')
+uniqueUsernames.addUser('john_doe') // Ця дія не змінить набір, оскільки 'john_doe' вже існує
+
+console.log(`Існує 'john_doe': ${uniqueUsernames.exists('john_doe')}`) // true
+console.log(`Кількість унікальних імен: ${uniqueUsernames.count()}`) // 2
+
+// Експорт для використання в тестах
+export { CalorieCalculator, UniqueUsernames }

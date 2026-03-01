@@ -16,32 +16,35 @@ console.log('#6. JavaScript homework example file')
 
 class CalorieCalculator {
   constructor() {
-    // code here
+    this.products = new Map()
   }
 
-  addProduct() {
-    // code here
+  addProduct(productName, calories) {
+    this.products.set(productName, calories)
   }
 
   getProductCalories(productName) {
-    // code here
+    if (this.products.has(productName)) {
+      return this.products.get(productName)
+    }
+    return 'Product not found'
   }
 
   removeProduct(productName) {
-    // code here
+    this.products.delete(productName)
   }
 }
 
 // Демонстрація використання
-// const calorieCalculator = new CalorieCalculator()
-// calorieCalculator.addProduct('Apple', 52)
-// calorieCalculator.addProduct('Banana', 89)
-//
-// console.log(calorieCalculator.getProductCalories('Apple')) // 52
-// console.log(calorieCalculator.getProductCalories('Banana')) // 89
-//
-// calorieCalculator.removeProduct('Apple')
-// console.log(calorieCalculator.getProductCalories('Apple')) // Product not found
+const calorieCalculator = new CalorieCalculator()
+calorieCalculator.addProduct('Apple', 52)
+calorieCalculator.addProduct('Banana', 89)
+
+console.log(calorieCalculator.getProductCalories('Apple')) // 52
+console.log(calorieCalculator.getProductCalories('Banana')) // 89
+
+calorieCalculator.removeProduct('Apple')
+console.log(calorieCalculator.getProductCalories('Apple')) // Product not found
 
 /*
  * #2
@@ -59,30 +62,30 @@ class CalorieCalculator {
 
 class UniqueUsernames {
   constructor() {
-    // code here
+    this.usernames = new Set()
   }
 
   addUser(username) {
-    // code here
+    this.usernames.add(username)
   }
 
   exists(username) {
-    // code here
+    return this.usernames.has(username)
   }
 
   count() {
-    // code here
+    return this.usernames.size
   }
 }
 
 // Демонстрація використання
-// const uniqueUsernames = new UniqueUsernames()
-// uniqueUsernames.addUser('john_doe')
-// uniqueUsernames.addUser('jane_doe')
-// uniqueUsernames.addUser('john_doe') // Ця дія не змінить набір, оскільки 'john_doe' вже існує
-//
-// console.log(`Існує 'john_doe': ${uniqueUsernames.exists('john_doe')}`) // true
-// console.log(`Кількість унікальних імен: ${uniqueUsernames.count()}`) // 2
+const uniqueUsernames = new UniqueUsernames()
+uniqueUsernames.addUser('john_doe')
+uniqueUsernames.addUser('jane_doe')
+uniqueUsernames.addUser('john_doe') // Ця дія не змінить набір, оскільки 'john_doe' вже існує
+
+console.log(`Існує 'john_doe': ${uniqueUsernames.exists('john_doe')}`) // true
+console.log(`Кількість унікальних імен: ${uniqueUsernames.count()}`) // 2
 
 // Експорт для використання в тестах
 export { CalorieCalculator, UniqueUsernames }

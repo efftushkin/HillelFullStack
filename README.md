@@ -206,6 +206,29 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW24 - JavaScript: Map and Set Data Structures
+- **Location**: `hw24/`
+- **Description**: JavaScript exercises focusing on ES6 Map and Set data structures (in Ukrainian)
+- **Topics**: ES6 classes, Map, Set, data structure operations
+- **Exercises**:
+  1. `CalorieCalculator` class - Manage product calorie data using Map
+     - `addProduct(productName, calories)` - Add product with calorie value
+     - `getProductCalories(productName)` - Get calories or 'Product not found'
+     - `removeProduct(productName)` - Remove product from collection
+  2. `UniqueUsernames` class - Manage unique usernames using Set
+     - `addUser(username)` - Add username (automatically ensures uniqueness)
+     - `exists(username)` - Check if username exists
+     - `count()` - Get count of unique usernames
+- **Features**:
+  - ES6 Map data structure for key-value storage
+  - ES6 Set data structure for unique values
+  - Map methods: `set()`, `get()`, `has()`, `delete()`
+  - Set methods: `add()`, `has()`, `size`
+  - Automatic uniqueness enforcement with Set
+  - ES6 class syntax
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

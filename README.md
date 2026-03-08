@@ -229,6 +229,36 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW25 - JavaScript: DOM Manipulation and Web Storage APIs
+- **Location**: `hw25/`
+- **Description**: JavaScript exercises focusing on DOM manipulation, cookies, and web storage (in Ukrainian)
+- **Topics**: DOM API, cookies, sessionStorage, `document.createElement()`, `encodeURIComponent()`
+- **Exercises**:
+  1. `createDomElement(tagName, textContent, container)` - Create and append DOM element
+     - Creates element with specified tag name
+     - Sets text content
+     - Appends to container
+     - Returns created element reference
+  2. `setUserInfoCookie(key, value)` - Set cookie with 10-second expiration
+     - Encodes value for safe storage
+     - Sets cookie with expiration date
+     - Logs success message
+  3. `saveUserInfo(key, value)` - Save data to sessionStorage
+     - Stores key-value pair in sessionStorage
+     - Logs saved data
+  4. `getUserInfo(key)` - Retrieve data from sessionStorage
+     - Gets value by key from sessionStorage
+     - Logs retrieved data
+     - Returns the value
+- **Features**:
+  - DOM manipulation with `document.createElement()` and `appendChild()`
+  - Cookie management with expiration dates
+  - URL encoding with `encodeURIComponent()`
+  - sessionStorage API (`setItem()`, `getItem()`)
+  - Date manipulation for cookie expiration
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

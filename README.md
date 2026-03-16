@@ -259,6 +259,33 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW26 - JavaScript: Event Handling and Event Delegation
+- **Location**: `hw26/`
+- **Description**: JavaScript exercises focusing on DOM events, event listeners, and event delegation (in Ukrainian)
+- **Topics**: Event handling, `addEventListener()`, event delegation, mouse events, ES6 modules
+- **Exercises**:
+  1. `handleButtonClick(buttonId, message)` - Attach click event handler to button
+     - Finds button by ID
+     - Adds click event listener
+     - Logs custom message on click
+  2. `trackMousePosition()` - Track mouse movement across document
+     - Listens to `mousemove` event
+     - Logs mouse coordinates (clientX, clientY)
+     - Returns cleanup function to remove listener
+  3. `setupEventDelegation(selector)` - Event delegation for list items
+     - Attaches single event listener to parent list
+     - Detects clicks on `<li>` elements
+     - Logs clicked item text
+- **Features**:
+  - DOM event handling with `addEventListener()`
+  - Event object properties (`clientX`, `clientY`, `target`, `tagName`)
+  - Event delegation pattern for performance
+  - Event listener cleanup with `removeEventListener()`
+  - ES6 modules with `type="module"`
+  - Interactive HTML demo page
+- **Files**: `main.js`, `index.html`, `style.css`
+- **Note**: Use **Live Server** extension for VSCode to avoid CORS errors when working with ES6 modules. Simply right-click on `index.html` and select "Open with Live Server".
+
 ## Technologies Used
 
 - HTML5

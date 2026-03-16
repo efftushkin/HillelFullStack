@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HW26 - Event Handling Demo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>HW26 - Event Handling Demo</h1>
+  
+  <div class="section">
+    <h2>Task #1: Button Click Handler</h2>
+    <p>Click the buttons below to see console messages:</p>
+    <button id="firstButton">Click Me!</button>
+    <button id="secondButton">Another Button</button>
+    <button id="thirdButton">Third Button</button>
+    <p><em>Open the browser console (F12) to see the output</em></p>
+  </div>
+  
+  <div class="section">
+    <h2>Task #2: Mouse Position Tracker</h2>
+    <p>Move your mouse above the document</p>
+    <p><em>Check the console to see mouse coordinates</em></p>
+  </div>
+  
+  <div class="section">
+    <h2>Task #3: Event Delegation</h2>
+    <p>Click on any list item:</p>
+    <ul id="testList">
+      <li>Item 1</li>
+      <li>Item 2</li>
+      <li>Item 3</li>
+      <li>Item 4</li>
+      <li>Item 5</li>
+    </ul>
+    <p><em>Check the console to see which item was clicked</em></p>
+  </div>
+  
+  <script type="module">
+    import { handleButtonClick, trackMousePosition, setupEventDelegation } from './main.js'
+    
+    // Task #1: Setup button click handlers
+    handleButtonClick('firstButton', 'Button clicked!')
+    handleButtonClick('secondButton', 'Second button was clicked!')
+    handleButtonClick('thirdButton', 'Third button clicked!')
+    
+    // Task #2: Track mouse position
+    trackMousePosition()
+    
+    // Task #3: Setup event delegation for list
+    setupEventDelegation('#testList')
+  </script>
+</body>
+</html>
+

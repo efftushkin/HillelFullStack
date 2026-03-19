@@ -286,6 +286,37 @@ This repository will be continuously updated with homework assignments as the co
 - **Files**: `main.js`, `index.html`, `style.css`
 - **Note**: Use **Live Server** extension for VSCode to avoid CORS errors when working with ES6 modules. Simply right-click on `index.html` and select "Open with Live Server".
 
+#### HW29 - JavaScript: Unit Testing with Jest
+- **Location**: `hw29/`
+- **Description**: Introduction to unit testing with Jest framework (in Ukrainian)
+- **Topics**: Jest testing framework, unit tests, test suites, npm scripts, CommonJS modules
+- **Setup**:
+  - Initialize npm project (`npm init -y`)
+  - Install Jest as dev dependency (`npm install --save-dev jest`)
+  - Configure test script in `package.json`: `"test": "jest"`
+- **Functions to Test**:
+  1. `ageClassification(num)` - Age classification with ternary operators
+     - Returns age category based on number ranges
+     - Categories: null, Дитинство, Молодість, Зрілість, Старість, Довголіття, Рекорд
+  2. `weekFn(cond)` - Day of week function with switch/case
+     - Returns Ukrainian day name for numbers 1-7
+     - Returns null for invalid inputs
+- **Test Coverage**:
+  - Comprehensive test suites with `describe()` blocks
+  - Multiple test cases with `test()` and `expect()`
+  - Edge case testing (boundaries, invalid inputs)
+  - Type validation tests (strings, decimals, null, undefined)
+  - 30+ test cases total
+- **Features**:
+  - Jest testing framework setup
+  - Test organization with `describe()` and `test()`
+  - Assertions with `expect()` and `toBe()`
+  - CommonJS module exports (`module.exports`)
+  - npm test script execution
+  - `__tests__` directory structure
+- **Files**: `main.js`, `__tests__/main.test.js`, `package.json`
+- **Run Tests**: `npm test`
+
 ## Technologies Used
 
 - HTML5

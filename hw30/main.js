@@ -9,11 +9,14 @@ console.log('#11. JavaScript homework example file')
  */
 
 function isValidEmail(email) {
-  // code here
+  // Regular expression for validating email addresses
+  // Pattern: username@domain.extension
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(email)
 }
 
-// console.log(isValidEmail('example@example.com')) // Повинно вивести: true
-// console.log(isValidEmail('invalid-email'))       // Повинно вивести: false
+console.log('isValidEmail("example@example.com")', isValidEmail('example@example.com')) // Повинно вивести: true
+console.log('isValidEmail("invalid-email")', isValidEmail('invalid-email'))       // Повинно вивести: false
 
 /*
  * #2
@@ -28,11 +31,15 @@ function isValidEmail(email) {
 */
 
 function isValidUrl(url) {
-  // code here
+  // Regular expression for validating URLs
+  // Pattern: protocol://domain.extension with optional path
+  const urlRegex = /^(https?:\/\/)([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(\/[^\s]*)?$/
+  return urlRegex.test(url)
 }
 
-// console.log(isValidUrl('https://www.example.com')) // Повинно вивести: true
-// console.log(isValidUrl('invalid-url'))             // Повинно вивести: false
+console.log('isValidUrl("https://www.example.com")', isValidUrl('https://www.example.com')) // Повинно вивести: true
+console.log('isValidUrl("http://www.example.com")', isValidUrl('http://www.example.com')) // Повинно вивести: true
+console.log('isValidUrl("invalid-url")', isValidUrl('invalid-url'))             // Повинно вивести: false
 
 // Експорт функції для використання та тестування
 export { isValidEmail, isValidUrl }

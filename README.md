@@ -317,6 +317,31 @@ This repository will be continuously updated with homework assignments as the co
 - **Files**: `main.js`, `__tests__/main.test.js`, `package.json`
 - **Run Tests**: `npm test`
 
+#### HW30 - JavaScript: Regular Expressions
+- **Location**: `hw30/`
+- **Description**: JavaScript exercises focusing on Regular Expressions for validation (in Ukrainian)
+- **Topics**: Regular expressions (RegEx), pattern matching, validation, `test()` method
+- **Exercises**:
+  1. `isValidEmail(email)` - Email address validation
+     - Pattern: `username@domain.extension`
+     - RegEx: `/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/`
+     - Validates alphanumeric characters, dots, underscores, hyphens
+     - Returns `true` for valid emails, `false` otherwise
+  2. `isValidUrl(url)` - URL validation
+     - Pattern: `protocol://domain.extension/path`
+     - RegEx: `/^(https?:\/\/)([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})(\/[^\s]*)?$/`
+     - Validates HTTP/HTTPS protocols
+     - Supports optional path after domain
+     - Returns `true` for valid URLs, `false` otherwise
+- **Features**:
+  - Regular expression patterns for common validation tasks
+  - `test()` method for pattern matching
+  - Character classes and quantifiers
+  - Optional groups with `?`
+  - Anchors (`^` start, `$` end)
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

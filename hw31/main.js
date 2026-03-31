@@ -30,10 +30,19 @@ console.log('#14. JavaScript homework example file');
 
 async function getData(segment) {
   try {
-    // const response = await fetch(...)
-    // code here
+    const response = await fetch(`https://jsonplaceholder.typicode.com${segment}`);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } else {
+      console.log(`Error: HTTP status ${response.status}`);
+      return response.status;
+    }
   } catch (error) {
-    // code here
+    console.log(`Error: ${error.message}`);
+    return error.message;
   }
 }
 
@@ -65,10 +74,26 @@ async function getData(segment) {
 
 async function postData(segment, data) {
   try {
-    // const response = await fetch(...)
-    // code here
+    const response = await fetch(`https://jsonplaceholder.typicode.com${segment}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } else {
+      const errorMessage = `Error: HTTP status ${response.status}`;
+      console.log(errorMessage);
+      return errorMessage;
+    }
   } catch (error) {
-    // code here
+    console.log(`Error: ${error.message}`);
+    return error.message;
   }
 }
 
@@ -100,10 +125,26 @@ async function postData(segment, data) {
 
 async function putData(id, data) {
   try {
-    // const response = await fetch(...)
-    // code here
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } else {
+      const errorMessage = `Error: HTTP status ${response.status}`;
+      console.log(errorMessage);
+      return errorMessage;
+    }
   } catch (error) {
-    // code here
+    console.log(`Error: ${error.message}`);
+    return error.message;
   }
 }
 
@@ -135,10 +176,26 @@ async function putData(id, data) {
 
 async function patchData(id, data) {
   try {
-    // const response = await fetch(...)
-    // code here
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } else {
+      const errorMessage = `Error: HTTP status ${response.status}`;
+      console.log(errorMessage);
+      return errorMessage;
+    }
   } catch (error) {
-    // code here
+    console.log(`Error: ${error.message}`);
+    return error.message;
   }
 }
 
@@ -172,10 +229,20 @@ async function patchData(id, data) {
 
 async function deleteData(id) {
   try {
-    // const response = await fetch(...)
-    // code here
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      console.log(`Post with id ${id} has been successfully deleted.`);
+      return true;
+    } else {
+      console.log(`Failed to delete post with id ${id}. Status: ${response.status}`);
+      return response.status;
+    }
   } catch (error) {
-    // code here
+    console.log(`Error during deletion: ${error.message}`);
+    return error.message;
   }
 }
 

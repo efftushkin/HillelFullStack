@@ -342,6 +342,44 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW31 - JavaScript: Asynchronous Programming and Fetch API
+- **Location**: `hw31/`
+- **Description**: JavaScript exercises focusing on asynchronous programming with Fetch API (in Ukrainian)
+- **Topics**: Async/await, Fetch API, HTTP methods, REST API, error handling, JSONPlaceholder API
+- **Exercises**:
+  1. `getData(segment)` - HTTP GET request
+     - Fetches data from API endpoint
+     - Returns JSON data on success or error status
+     - Handles network errors with try/catch
+  2. `postData(segment, data)` - HTTP POST request
+     - Sends data to API endpoint
+     - Sets `Content-Type: application/json` header
+     - Converts data to JSON with `JSON.stringify()`
+  3. `putData(id, data)` - HTTP PUT request
+     - Updates entire resource by ID
+     - Full resource replacement
+     - Returns updated data or error message
+  4. `patchData(id, data)` - HTTP PATCH request
+     - Partial resource update by ID
+     - Updates only specified fields
+     - Returns modified data or error message
+  5. `deleteData(id)` - HTTP DELETE request
+     - Deletes resource by ID
+     - Returns `true` on success or error status
+     - Logs detailed success/error messages
+- **Features**:
+  - Modern async/await syntax for asynchronous operations
+  - Fetch API for HTTP requests
+  - All CRUD operations (GET, POST, PUT, PATCH, DELETE)
+  - HTTP status code handling with `response.ok`
+  - Error handling with try/catch blocks
+  - JSON serialization/deserialization
+  - Request headers configuration
+  - Console logging for debugging
+  - Integration with JSONPlaceholder test API
+  - ES6 module exports
+- **File**: `main.js`
+
 ## Technologies Used
 
 - HTML5

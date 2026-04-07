@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пошук фільмів - OMDb API</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <span class="icon">🎬</span>
+                Пошук фільмів
+            </h1>
+            <p class="subtitle">Знайдіть улюблені фільми, серіали та програми</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Введіть назву фільму..."
+                    autocomplete="off"
+                >
+                <div class="search-icon">🔍</div>
+            </div>
+            <div id="searchInfo" class="search-info"></div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Завантаження...</p>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden">
+            <div class="error-icon">⚠️</div>
+            <p id="errorText"></p>
+        </div>
+
+        <div id="resultsContainer" class="results-container">
+            <!-- Search results will be added here via JavaScript -->
+        </div>
+
+        <div id="emptyState" class="empty-state">
+            <div class="empty-icon">🎥</div>
+            <h2>Почніть пошук</h2>
+            <p>Введіть назву фільму у пошукове поле, щоб побачити результати</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Дані надані <a href="http://www.omdbapi.com/" target="_blank">OMDb API</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

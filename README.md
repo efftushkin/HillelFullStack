@@ -380,6 +380,33 @@ This repository will be continuously updated with homework assignments as the co
   - ES6 module exports
 - **File**: `main.js`
 
+#### HW32 - JavaScript: Movie Search with OMDb API
+- **Location**: `hw32/`
+- **Description**: Interactive movie search application using OMDb API with debouncing (in Ukrainian)
+- **Topics**: Fetch API, async/await, DOM manipulation, event handling, debouncing, third-party APIs
+- **Features**:
+  - Real-time movie search with OMDb API integration
+  - Input debouncing (500ms delay) to optimize API calls
+  - Dynamic movie card generation with posters, titles, year, and type
+  - Loading spinner with smooth animations
+  - Error handling with user-friendly error messages
+  - Empty state and no results state management
+  - Clickable movie cards that open IMDb pages in new tab
+  - Fallback image handling for missing posters
+  - Minimum 3-character search validation
+  - Search results counter display
+  - Modern responsive UI with gradient backgrounds
+  - CSS animations and transitions
+  - Card hover effects with scaling and shadows
+- **API Integration**:
+  - OMDb API (Open Movie Database)
+  - API key configuration
+  - URL encoding for search queries
+  - Response validation and error handling
+  - JSON data parsing and display
+- **Files**: `index.html`, `script.js`, `styles.css`
+- **Note**: Open `index.html` in a web browser to use the movie search application
+
 ## Technologies Used
 
 - HTML5

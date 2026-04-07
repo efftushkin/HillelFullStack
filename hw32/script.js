@@ -1,5 +1,5 @@
 // API Configuration
-const API_KEY = '536eb0a6'; // Replace with your API key from http://www.omdbapi.com/apikey.aspx
+const API_KEY = 'YOUR_API_KEY'; // Replace with your API key from http://www.omdbapi.com/apikey.aspx
 const API_URL = 'https://www.omdbapi.com/';
 const NO_POSTER_URL = 'https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_.png';
 

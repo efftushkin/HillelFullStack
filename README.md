@@ -407,11 +407,44 @@ This repository will be continuously updated with homework assignments as the co
 - **Files**: `index.html`, `script.js`, `styles.css`
 - **Note**: Open `index.html` in a web browser to use the movie search application
 
+#### HW36 - TypeScript: Introduction to TypeScript Fundamentals
+- **Location**: `hw36/`
+- **Description**: Introduction to TypeScript with basic type annotations and type safety (in Ukrainian)
+- **Topics**: TypeScript basics, type annotations, type aliases, enums, array methods with types
+- **Exercises**:
+  1. `sumArray(numbers: number[]): number` - Sum array elements using `reduce()`
+     - Type-safe array of numbers
+     - Returns sum or 0 for empty arrays
+     - Demonstrates basic type annotations
+  2. `createUser(name, age, isActive): User` - Create user object with custom type
+     - Type alias `User` with `name: string`, `age: number`, `isActive: boolean`
+     - Default parameter value for `isActive` (true)
+     - Returns strongly-typed User object
+     - Demonstrates type aliases with `type` keyword
+  3. `getOrderStatus(status: OrderStatus): string` - Order status description
+     - Enum `OrderStatus` with values: Pending, Shipped, Delivered, Cancelled
+     - Switch/case statement for status handling
+     - Throws error for unknown statuses
+     - Returns Ukrainian status descriptions
+     - Demonstrates enum types and exhaustive checking
+- **Features**:
+  - TypeScript type annotations for function parameters and return types
+  - Custom type aliases with `type` keyword
+  - Enum definitions for fixed sets of values
+  - Type-safe array operations with `reduce()`
+  - Default parameter values with type safety
+  - Error handling with typed exceptions
+  - Switch/case with enum values
+  - ES6 module exports with types
+- **File**: `main.ts`
+- **Note**: Requires TypeScript installation. See "TypeScript Assignments" section below for setup and running instructions
+
 ## Technologies Used
 
 - HTML5
 - CSS3
 - JavaScript (ES6+)
+- TypeScript
 
 ## Development Tools
 
@@ -432,6 +465,38 @@ node hw19/sumBigIntegers.js
 ```
 
 Or open the browser console and copy-paste the code to see the output.
+
+### TypeScript Assignments (HW36+)
+
+#### Prerequisites
+First, install TypeScript globally:
+```bash
+npm install -g typescript
+```
+
+Or install TypeScript and ts-node locally in the project:
+```bash
+# Initialize npm project if not already done
+npm init -y
+
+# Install TypeScript and ts-node as dev dependencies
+npm install --save-dev typescript ts-node @types/node
+```
+
+#### Running TypeScript Files
+Once TypeScript is installed, you can compile and run:
+
+```bash
+# Option 1: Compile TypeScript to JavaScript, then run
+tsc hw36/main.ts
+node hw36/main.js
+
+# Option 2: Run directly with ts-node (if installed)
+npx ts-node hw36/main.ts
+
+# Option 3: Use online TypeScript playground
+# Visit https://www.typescriptlang.org/play and paste the code
+```
 
 ## Author
 

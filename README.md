@@ -439,6 +439,38 @@ This repository will be continuously updated with homework assignments as the co
 - **File**: `main.ts`
 - **Note**: Requires TypeScript installation. See "TypeScript Assignments" section below for setup and running instructions
 
+#### HW37 - TypeScript: Advanced Features - Interfaces, Decorators, and Namespaces
+- **Location**: `hw37/`
+- **Description**: Advanced TypeScript concepts focusing on interfaces, decorators, and namespaces (in Ukrainian)
+- **Topics**: Interfaces, method decorators, namespaces, encapsulation, type safety
+- **Exercises**:
+  1. `createPerson(name, age, isActive): PersonInterface` - Create person object with interface
+     - Interface `PersonInterface` with `name: string`, `age: number`, `isActive: boolean`
+     - Explicit return type annotation
+     - Ensures type safety and structure compliance
+  2. `Calculator` class with decorator `LogMethodCalls` - Method call logging
+     - `add(a, b): number` - Addition with logging
+     - `multiply(a, b): number` - Multiplication with logging
+     - Method decorator `LogMethodCalls` logs method name and arguments
+     - Demonstrates aspect-oriented programming with decorators
+  3. `UserProfile` namespace - User profile creation with encapsulation
+     - Namespace `UserProfile` for organizing related code
+     - Interface `ProfileInterface` with `id`, `name`, `email` properties
+     - `createProfile(name, email): ProfileInterface` - Create user profile
+     - Private `generateId()` function for unique ID generation
+     - Demonstrates namespace-based encapsulation and privacy
+- **Features**:
+  - TypeScript interfaces for type contracts
+  - Method decorators for cross-cutting concerns (logging)
+  - Namespaces for code organization and encapsulation
+  - Private functions within namespaces
+  - Explicit return type annotations
+  - Property descriptor manipulation
+  - ES6 module exports with TypeScript types
+  - tsconfig.json configuration with decorator support
+- **Files**: `main.ts`, `tsconfig.json`, `dist/main.js` (compiled output)
+  - **Note**: Requires TypeScript installation and `experimentalDecorators` enabled in tsconfig.json. See "TypeScript Assignments" section below for setup and running instructions
+
 ## Technologies Used
 
 - HTML5

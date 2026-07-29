@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Whisker Stories — an accessible, responsive JavaScript image slider."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2246%22 fill=%22%23f5f0e8%22 stroke=%22%23342e2a%22 stroke-width=%224%22/><text x=%2250%22 y=%2267%22 text-anchor=%22middle%22 font-size=%2254%22 fill=%22%23342e2a%22>W</text></svg>"
+    />
+    <title>Whisker Stories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="Whisker Stories home">
+          <span class="brand__mark" aria-hidden="true">W</span>
+          <span>Whisker Stories</span>
+        </a>
+        <p class="header-note">A tiny collection of slow moments</p>
+      </header>
+
+      <section
+        class="slider"
+        aria-roledescription="carousel"
+        aria-label="Whisker Stories gallery"
+      >
+        <div class="slider__visual">
+          <div class="slider__viewport">
+            <div class="slider__track"></div>
+
+            <div class="slider__topbar" aria-hidden="true">
+              <span class="eyebrow">Illustrated collection</span>
+              <span class="slide-count">
+                <span class="slide-count__current">01</span>
+                <span class="slide-count__divider"></span>
+                <span class="slide-count__total">20</span>
+              </span>
+            </div>
+
+            <div class="slider__arrows">
+              <button
+                class="icon-button slider__arrow slider__arrow--previous"
+                type="button"
+                aria-label="Previous slide"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 5-7 7 7 7" />
+                </svg>
+              </button>
+              <button
+                class="icon-button slider__arrow slider__arrow--next"
+                type="button"
+                aria-label="Next slide"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="slider__details">
+          <div class="slide-copy" aria-live="polite" aria-atomic="true">
+            <p class="slide-copy__number">Story 01</p>
+            <h1 class="slide-copy__title">Sleepy Strawberry Cat</h1>
+            <p class="slide-copy__description">
+              A quiet afternoon tucked between strawberry leaves and tiny white
+              blooms.
+            </p>
+          </div>
+
+          <div class="slider__controls">
+            <button class="play-button" type="button" aria-label="Pause autoplay">
+              <span class="play-button__icon" aria-hidden="true"></span>
+              <span class="play-button__label">Pause</span>
+            </button>
+
+            <div
+              class="slider__dots"
+              role="group"
+              aria-label="Choose a slide"
+            ></div>
+          </div>
+
+          <div class="slider__progress" aria-hidden="true">
+            <span class="slider__progress-bar"></span>
+          </div>
+
+          <p class="slider__hint">
+            <span>Drag to explore</span>
+            <span class="slider__hint-separator"></span>
+            <span>Use arrow keys</span>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <noscript>This gallery requires JavaScript to work.</noscript>
+  </body>
+</html>

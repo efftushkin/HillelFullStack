@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A responsive, accessible JavaScript slider showcasing the imaginative worlds of Dixit."
+    />
+    <title>Dixit Worlds — JavaScript Slider</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23171b2e'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Georgia' font-size='43' font-style='italic' fill='%23efb050'%3ED%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="Dixit Worlds home">
+          <span class="brand__mark" aria-hidden="true">D</span>
+          <span>Dixit Worlds</span>
+        </a>
+
+        <p class="site-header__hint">
+          <span class="site-header__hint-key" aria-hidden="true">←</span>
+          Use arrow keys
+          <span class="site-header__hint-key" aria-hidden="true">→</span>
+        </p>
+      </header>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__intro">
+          <p class="eyebrow">A journey through imagination</p>
+          <h1 id="page-title">
+            Every picture tells
+            <em>a different story.</em>
+          </h1>
+          <p class="hero__copy">
+            Explore the poetic worlds of Dixit — from the beloved original to
+            dreamlike expansions, each one opens a new door.
+          </p>
+        </div>
+
+        <div id="dixit-slider"></div>
+      </section>
+
+      <noscript>
+        <p class="noscript-message">
+          This interactive gallery requires JavaScript to display the slides.
+        </p>
+      </noscript>
+    </main>
+  </body>
+</html>

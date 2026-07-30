@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A fully featured JavaScript slider built with constructor functions, prototypes, and inheritance."
+    />
+    <title>Dixit Collection Slider</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="hero">
+        <p class="hero__eyebrow">A gallery of imagination</p>
+        <h1>Dixit collection</h1>
+        <p class="hero__intro">
+          Travel through every story. Use the controls, arrow keys, or drag a
+          card to explore the collection.
+        </p>
+      </header>
+
+      <section aria-labelledby="collection-title">
+        <h2 id="collection-title" class="visually-hidden">Dixit games</h2>
+        <div id="dixit-slider"></div>
+      </section>
+
+      <noscript>
+        <p class="no-script">Please enable JavaScript to view the slider.</p>
+      </noscript>
+    </main>
+
+    <script src="./js/slider.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>

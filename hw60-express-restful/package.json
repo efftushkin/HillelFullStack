@@ -1,0 +1,19 @@
+{
+  "name": "hw60-express-restful",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express",
+    "rest",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "RESTful API server built with Express.js following the MVC pattern.",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

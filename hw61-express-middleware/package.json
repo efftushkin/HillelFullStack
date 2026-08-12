@@ -1,0 +1,20 @@
+{
+  "name": "hw61-express-middleware",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express",
+    "rest",
+    "api",
+    "middleware"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares.",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

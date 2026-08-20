@@ -1,0 +1,25 @@
+{
+  "name": "hw62-express-pug-ejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express",
+    "rest",
+    "api",
+    "middleware",
+    "pug",
+    "ejs",
+    "templating"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, and rendering HTML pages with the PUG (/users) and EJS (/articles) template engines.",
+  "dependencies": {
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "pug": "^3.0.4"
+  }
+}

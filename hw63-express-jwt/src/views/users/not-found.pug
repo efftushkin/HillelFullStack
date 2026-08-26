@@ -1,0 +1,6 @@
+extends ../layout
+
+block content
+  h1.page-title User not found
+  p.page-subtitle= `No user found with id "${userId}"`
+  a.back-link(href="/users") ← Back to users

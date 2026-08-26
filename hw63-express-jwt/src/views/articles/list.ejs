@@ -1,0 +1,16 @@
+<%- include('../partials/header', { title: title }) %>
+  <h1 class="page-title">Articles</h1>
+  <p class="page-subtitle">Total articles: <%= articles.length %></p>
+  <ul class="card-list">
+    <% articles.forEach(function (article) { %>
+      <li class="card">
+        <div class="card-body">
+          <h2 class="card-title"><%= article.title %></h2>
+          <p class="card-text">Author: <%= article.author %></p>
+          <p class="card-text">Published: <%= article.publishedAt %></p>
+          <a class="btn" href="/articles/<%= article.id %>">Read more</a>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+<%- include('../partials/footer') %>

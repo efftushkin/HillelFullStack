@@ -12,14 +12,21 @@
     "middleware",
     "pug",
     "ejs",
-    "templating"
+    "templating",
+    "jwt",
+    "cookies",
+    "authentication",
+    "favicon"
   ],
   "author": "",
   "license": "ISC",
-  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, and rendering HTML pages with the PUG (/users) and EJS (/articles) template engines.",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, and providing JWT-based registration/login with tokens stored in an httpOnly cookie to protect routes.",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "pug": "^3.0.4"
   }
 }

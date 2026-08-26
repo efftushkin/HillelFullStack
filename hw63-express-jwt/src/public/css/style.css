@@ -10,6 +10,18 @@
   --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
+/* Applied to <html data-theme="dark">, set via the /theme cookie route. */
+[data-theme='dark'] {
+  --color-bg: #14161a;
+  --color-surface: #1e2128;
+  --color-border: #2c2f37;
+  --color-text: #e8e9ec;
+  --color-muted: #9aa1ac;
+  --color-primary: #6f8cff;
+  --color-primary-dark: #536ee0;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -20,6 +32,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   line-height: 1.5;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .container {
@@ -47,6 +60,12 @@ body {
   text-decoration: none;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .site-header nav a {
   margin-left: 20px;
   color: var(--color-muted);
@@ -54,8 +73,38 @@ body {
   font-weight: 500;
 }
 
+.site-header nav a:first-child {
+  margin-left: 0;
+}
+
 .site-header nav a:hover {
   color: var(--color-primary);
+}
+
+.theme-form {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.theme-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-muted);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.theme-btn:hover {
+  color: var(--color-primary);
+}
+
+.theme-btn.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 main.container {

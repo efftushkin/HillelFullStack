@@ -1,0 +1,24 @@
+doctype html
+html(lang="uk" data-theme=theme)
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= title
+    link(rel="icon" href="/favicon.ico")
+    link(rel="stylesheet" href="/css/style.css")
+  body
+    header.site-header
+      div.container
+        a.logo(href="/") HW63 Server
+        div.header-actions
+          nav
+            a(href="/users") Users
+            a(href="/articles") Articles
+          form.theme-form(action="/theme" method="POST")
+            button.theme-btn(type="submit" name="theme" value="light" class=(theme === 'light' ? 'active' : '')) ☀ Light
+            button.theme-btn(type="submit" name="theme" value="dark" class=(theme === 'dark' ? 'active' : '')) 🌙 Dark
+    main.container
+      block content
+    footer.site-footer
+      div.container
+        p © 2026 Express + PUG + EJS + JWT demo

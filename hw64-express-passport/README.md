@@ -1,37 +1,39 @@
 # hw64-express-passport
 
-A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw62-express-pug-ejs`) with:
+A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw63-express-jwt`) by replacing the JWT-based authentication with **Passport**:
 
 - a shared **favicon** served on every HTML page (PUG and EJS alike);
 - a **theme preference** (light/dark) persisted in a cookie via `cookie-parser`;
-- **JWT-based authentication** — registration and login routes that issue a JSON Web Token, stored in an `httpOnly` cookie, and a middleware that verifies the token to protect routes.
+- **Passport-based authentication** — a `passport-local` strategy validates an email/password pair, and `express-session` persists the resulting login state server-side, identified by a session id stored in an `httpOnly` cookie;
+- a **protected route** (`GET /protected`), plus the pre-existing `GET /users*` routes and `GET /auth/me`, all guarded by a Passport-session middleware that only lets a request through when it carries a valid, logged-in session.
 
 The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Write operations (`POST`/`PUT`/`DELETE`) still return plain text/JSON.
 
 ## Project Structure
 
 ```
-hw63-express-jwt/
+hw64-express-passport/
 ├── index.js                       # Entry point - starts the server on port 3000
 ├── src/
 │   ├── app.js                     # Express app setup, view engines, static files, middleware wiring
 │   ├── config/
-│   │   ├── jwt.js                 # JWT secret/expiry and auth-cookie settings
+│   │   ├── passport.js            # Passport local strategy (email/password) + serialize/deserialize
+│   │   ├── session.js             # express-session secret, cookie name and max-age
 │   │   └── theme.js               # Theme cookie name, valid values, default, max-age
 │   ├── controllers/                # Request handling logic (the "C" in MVC)
 │   │   ├── rootController.js
 │   │   ├── usersController.js      # Renders PUG views for GET /users and GET /users/:userId
 │   │   ├── articlesController.js   # Renders EJS views for GET /articles and GET /articles/:articleId
-│   │   ├── authController.js       # Register/login/logout/me - issues and reads JWTs
+│   │   ├── authController.js       # Register/login/logout/me - built on Passport + express-session
+│   │   ├── protectedController.js  # GET /protected - sample route guarded by a valid session
 │   │   └── themeController.js      # Saves the chosen theme into a cookie
 │   ├── data/                       # In-memory sample data used by the views
 │   │   ├── users.js                 # Sample users shown on the /users pages
 │   │   ├── articles.js
-│   │   └── accounts.js              # In-memory auth accounts (username + hashed password)
+│   │   └── accounts.js              # In-memory auth accounts (email + hashed password)
 │   ├── middlewares/                # Cross-cutting request processing logic
 │   │   ├── logger.js               # Request logging
-│   │   ├── session.js              # Session management
-│   │   ├── auth.js                 # JWT verification (reads the token cookie or Authorization header)
+│   │   ├── auth.js                 # ensureAuthenticated - checks req.isAuthenticated() (Passport session)
 │   │   ├── theme.js                # Reads the theme cookie into res.locals.theme for every view
 │   │   ├── validateUser.js         # Validation for user data/params
 │   │   ├── articleAccess.js        # Access control + validation for articles
@@ -42,6 +44,7 @@ hw63-express-jwt/
 │   │   ├── usersRoutes.js
 │   │   ├── articlesRoutes.js
 │   │   ├── authRoutes.js           # /auth/register, /auth/login, /auth/logout, /auth/me
+│   │   ├── protectedRoutes.js      # /protected
 │   │   └── themeRoutes.js          # /theme
 │   ├── views/                      # Templates rendered by the two view engines
 │   │   ├── layout.pug              # Shared PUG layout (favicon, theme toggle, header/nav/footer)
@@ -149,50 +152,58 @@ curl -b cookies.txt http://localhost:3000/articles   # rendered with data-theme=
 curl -i -X POST -d "theme=neon" http://localhost:3000/theme   # 400
 ```
 
-## JWT Authentication
+## Passport Authentication and Sessions
+
+Authentication is handled by [Passport](https://www.passportjs.org/) with the [`passport-local`](https://github.com/jaredhanson/passport-local) strategy, and the resulting login state is kept server-side by [`express-session`](https://github.com/expressjs/session) - the client only holds an opaque session id, never any credentials or user data.
 
 | Piece | File | Purpose |
 | --- | --- | --- |
-| `JWT_SECRET` / `JWT_EXPIRES_IN` | `src/config/jwt.js` | Signing secret (from `process.env.JWT_SECRET`, with a development fallback) and token lifetime (`1h`). |
-| `accounts` | `src/data/accounts.js` | In-memory list of registered accounts (`{ id, username, passwordHash }`), separate from the sample `users` data used by the `/users` pages. Seeded with one demo account: **username `demo`, password `demo1234`**. |
-| `authenticate` | `src/middlewares/auth.js` | Reads the JWT from the `token` cookie, or from an `Authorization: Bearer <token>` header as a fallback. Responds `401` if no token is present, or if `jwt.verify` fails (invalid signature/expired); otherwise attaches the decoded payload to `req.user` and calls `next()`. Protects `GET /users*` and `GET /auth/me`. |
+| `SESSION_SECRET` / `SESSION_COOKIE_NAME` / `SESSION_COOKIE_MAX_AGE` | `src/config/session.js` | Cookie-signing secret (from `process.env.SESSION_SECRET`, with a development fallback), the session cookie's name (`sid`) and lifetime (`1h`). |
+| Passport `LocalStrategy` | `src/config/passport.js` | Configured with `{ usernameField: 'email', passwordField: 'password' }` so it reads `email`/`password` from the request body instead of Passport's default `username` field. Looks the account up by email and checks the password with `bcryptjs`. |
+| `serializeUser` / `deserializeUser` | `src/config/passport.js` | Only the account `id` is stored in the session; on every request Passport looks the full account back up from `id`, so the session payload stays small and always reflects the current account state. |
+| `accounts` | `src/data/accounts.js` | In-memory list of registered accounts (`{ id, email, passwordHash }`), separate from the sample `users` data used by the `/users` pages. Seeded with one demo account: **email `demo@example.com`, password `demo1234`**. |
+| `ensureAuthenticated` | `src/middlewares/auth.js` | Calls Passport's `req.isAuthenticated()`, which is `true` only when the incoming session cookie maps to a valid, still-logged-in session. Responds `401` otherwise; on success calls `next()` with `req.user` set to the full account. Protects `GET /users*`, `GET /auth/me` and `GET /protected`. |
 | `register` / `login` / `logout` / `getCurrentUser` | `src/controllers/authController.js` | See routes below. |
 
-Passwords are hashed with `bcryptjs` before being stored; they are never kept or returned in plain text. On successful register/login, the server:
+Passwords are hashed with `bcryptjs` before being stored; they are never kept or returned in plain text. The full flow:
 
-1. Signs a JWT containing `{ id, username }` with `JWT_SECRET`, expiring in 1 hour.
-2. Sets it as a cookie named `token` with `httpOnly: true` (not readable from client-side JavaScript), `sameSite: 'lax'`, `maxAge` matching the token's lifetime.
-3. Also returns the same token in the JSON response body, so the routes can be exercised with plain `curl` without a cookie jar.
+1. `POST /auth/register` creates the account, then calls Passport's `req.login()` to start a session for it immediately (no separate login step needed after registering).
+2. `POST /auth/login` runs `passport.authenticate('local', ...)`, which invokes the `LocalStrategy` above; on success it also calls `req.login()` to start the session.
+3. `req.login()` regenerates the session and stores the serialized account id in it; `express-session` then sets a `Set-Cookie: sid=...` header with `httpOnly: true` (not readable from client-side JavaScript) and `secure` (only sent over HTTPS - see the note below on running behind TLS in production).
+4. Every subsequent request that carries that cookie is deserialized back into `req.user` by `passport.session()`, so `ensureAuthenticated` and the controllers can rely on it.
+5. `POST /auth/logout` calls Passport's `req.logout()`, which clears the login state from the session.
+
+> **Note on the `secure` cookie flag:** this project sets `secure: process.env.NODE_ENV === 'production'`. A `secure` cookie is only ever sent by the browser over HTTPS, so hardcoding `secure: true` would silently break every session cookie while developing locally over plain HTTP. Set `NODE_ENV=production` (and serve the app over HTTPS, e.g. behind a reverse proxy) to enable it.
 
 ### Auth routes (`src/routes/authRoutes.js`, mounted at `/auth`)
 
 | Method | Path | Auth required | Body | Response |
 | --- | --- | --- | --- | --- |
-| POST | `/auth/register` | No | `{ "username", "password" }` | `201` + `{ message, user, token }`, sets the `token` cookie. `400` if fields are missing, `409` if the username is taken. |
-| POST | `/auth/login` | No | `{ "username", "password" }` | `200` + `{ message, user, token }`, sets the `token` cookie. `400` if fields are missing, `401` if the credentials are invalid. |
-| POST | `/auth/logout` | No | — | `200` + `{ message }`, clears the `token` cookie. |
-| GET | `/auth/me` | **Yes (JWT)** | — | `200` + `{ user }` with the decoded token payload. `401` if not authenticated. |
+| POST | `/auth/register` | No | `{ "email", "password" }` | `201` + `{ message, user }`, starts a session and sets the `sid` cookie. `400` if fields are missing, `409` if the email is already registered. |
+| POST | `/auth/login` | No | `{ "email", "password" }` | `200` + `{ message, user }`, starts a session and sets the `sid` cookie. `400` if fields are missing, `401` if the credentials are invalid. |
+| POST | `/auth/logout` | No | — | `200` + `{ message }`, ends the session server-side. |
+| GET | `/auth/me` | **Yes (session)** | — | `200` + `{ user }` for the logged-in account. `401` if not authenticated. |
 
 ```bash
 # Register a new account (also logs it in - cookie saved to jar for reuse)
 curl -c cookies.txt -X POST -H "Content-Type: application/json" \
-  -d '{"username":"alice","password":"alice123"}' http://localhost:3000/auth/register
+  -d '{"email":"alice@example.com","password":"alice123"}' http://localhost:3000/auth/register
 
 # Log in with the seeded demo account
 curl -c cookies.txt -X POST -H "Content-Type: application/json" \
-  -d '{"username":"demo","password":"demo1234"}' http://localhost:3000/auth/login
+  -d '{"email":"demo@example.com","password":"demo1234"}' http://localhost:3000/auth/login
 
-# Check who the token belongs to (cookie-based)
+# Check who the session belongs to
 curl -b cookies.txt http://localhost:3000/auth/me
 
-# Log out (clears the cookie server-side)
+# Access the protected route
+curl -b cookies.txt http://localhost:3000/protected
+
+# Log out (ends the session server-side)
 curl -b cookies.txt -c cookies.txt -X POST http://localhost:3000/auth/logout
 
-# Alternative: send the token via header instead of a cookie
-TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
-  -d '{"username":"demo","password":"demo1234"}' http://localhost:3000/auth/login \
-  | node -e "process.stdin.on('data', d => console.log(JSON.parse(d).token))")
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/users
+# The protected route now rejects the same (logged-out) cookie
+curl -i -b cookies.txt http://localhost:3000/protected   # 401
 ```
 
 ## Middlewares
@@ -202,9 +213,10 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/users
 | Middleware | File | Purpose |
 | --- | --- | --- |
 | `requestLogger` | `src/middlewares/logger.js` | Logs the timestamp, HTTP method and URL of every incoming request to the console. |
-| `cookieParser` | `cookie-parser` package | Parses cookies from the request header into `req.cookies`. |
-| `sessionManager` | `src/middlewares/session.js` | Reads the `X-Session-Id` request header. If it is missing or unknown, generates a new session id and stores basic session data (creation time, request count, last access time) in an in-memory store. Attaches the session to `req.session` / `req.sessionId` and echoes the id back via the `X-Session-Id` response header. |
+| `cookieParser` | `cookie-parser` package | Parses cookies from the request header into `req.cookies` (used by `themeLoader`). |
 | `express.json` / `express.urlencoded` | Express built-ins | Parse JSON bodies (used by `/auth/*`) and URL-encoded form bodies (used by `/theme`). |
+| `session` | `express-session` package, configured in `src/config/session.js` | Loads/creates the session for the incoming `sid` cookie and exposes it as `req.session`. See [Passport Authentication and Sessions](#passport-authentication-and-sessions). |
+| `passport.initialize()` / `passport.session()` | `passport` package, configured in `src/config/passport.js` | Wires Passport into the request pipeline and reads the logged-in account out of `req.session` into `req.user` on every request. |
 | `express.static` | Express built-in | Serves `src/public/` (CSS and `favicon.ico`). |
 | `themeLoader` | `src/middlewares/theme.js` | Reads the `theme` cookie into `res.locals.theme` for every view render. |
 | `notFoundHandler` | `src/middlewares/errorHandler.js` | Runs after all routes; returns a plain-text `404` for any URL that doesn't match a defined route. |
@@ -214,7 +226,7 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/users
 
 | Middleware | File | Applied to | Purpose |
 | --- | --- | --- | --- |
-| `authenticate` | `src/middlewares/auth.js` | All `/users` routes | Requires a valid JWT, via the `token` cookie or an `Authorization: Bearer <token>` header. Responds `401` if it is missing or fails verification, otherwise attaches the decoded payload to `req.user` and calls `next()`. |
+| `ensureAuthenticated` | `src/middlewares/auth.js` | All `/users` routes | Requires a valid, logged-in Passport session (`req.isAuthenticated()`). Responds `401` if there is none, otherwise attaches the account to `req.user` and calls `next()`. |
 | `validateUserId` | `src/middlewares/validateUser.js` | Routes with `:userId` (`GET/PUT/DELETE /users/:userId`) | Responds `400` unless `userId` is a numeric string. |
 | `validateUserInput` | `src/middlewares/validateUser.js` | `POST /users`, `PUT /users/:userId` | Responds `400` unless the request body contains both `username` and `password`. |
 
@@ -224,6 +236,12 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/users
 | --- | --- | --- | --- |
 | `checkArticleAccess` | `src/middlewares/articleAccess.js` | All `/articles` routes | Reads the `x-role` request header (defaults to `guest`). `GET` requests are allowed for any role; `POST`/`PUT`/`DELETE` require role `admin` or `editor`, otherwise responds `403`. |
 | `validateArticleId` | `src/middlewares/articleAccess.js` | Routes with `:articleId` (`GET/PUT/DELETE /articles/:articleId`) | Responds `400` unless `articleId` is a numeric string. |
+
+### `/protected` middlewares (`src/routes/protectedRoutes.js`)
+
+| Middleware | File | Applied to | Purpose |
+| --- | --- | --- | --- |
+| `ensureAuthenticated` | `src/middlewares/auth.js` | `GET /protected` | Same session check as above - `401` without a valid logged-in session. |
 
 ## API Routes
 
@@ -243,19 +261,25 @@ The read (`GET`) routes for `/users` and `/articles` render **HTML** pages (PUG 
 
 ### Auth
 
-See [JWT Authentication](#jwt-authentication) above for the full table.
+See [Passport Authentication and Sessions](#passport-authentication-and-sessions) above for the full table.
 
-### Users
-
-Requires a valid JWT (see [JWT Authentication](#jwt-authentication)) on every request. Sample data comes from `src/data/users.js` (ids `1`–`4`).
+### Protected
 
 | Method | Path | Middlewares | Response |
 | --- | --- | --- | --- |
-| GET | `/users` | auth (JWT) | HTML page (PUG) — list of users |
-| POST | `/users` | auth (JWT), validate body | `Post users route` |
-| GET | `/users/:userId` | auth (JWT), validate id | HTML page (PUG) — user details, or a `404` HTML page if the id is unknown |
-| PUT | `/users/:userId` | auth (JWT), validate id, validate body | `Put user by Id route: {userId}` |
-| DELETE | `/users/:userId` | auth (JWT), validate id | `Delete user by Id route: {userId}` |
+| GET | `/protected` | auth (Passport session) | `200` + `{ message, user }` for a logged-in session. `401` otherwise. |
+
+### Users
+
+Requires a valid, logged-in Passport session (see [Passport Authentication and Sessions](#passport-authentication-and-sessions)) on every request. Sample data comes from `src/data/users.js` (ids `1`–`4`).
+
+| Method | Path | Middlewares | Response |
+| --- | --- | --- | --- |
+| GET | `/users` | auth (session) | HTML page (PUG) — list of users |
+| POST | `/users` | auth (session), validate body | `Post users route` |
+| GET | `/users/:userId` | auth (session), validate id | HTML page (PUG) — user details, or a `404` HTML page if the id is unknown |
+| PUT | `/users/:userId` | auth (session), validate id, validate body | `Put user by Id route: {userId}` |
+| DELETE | `/users/:userId` | auth (session), validate id | `Delete user by Id route: {userId}` |
 
 ### Articles
 
@@ -281,16 +305,16 @@ curl -i http://localhost:3000/favicon.ico
 # Theme
 curl -i -X POST -d "theme=dark" http://localhost:3000/theme
 
-# Auth - register, login, check identity, logout
+# Auth - register, login, check identity, access the protected route, logout
 curl -c cookies.txt -X POST -H "Content-Type: application/json" \
-  -d '{"username":"demo","password":"demo1234"}' http://localhost:3000/auth/login
+  -d '{"email":"demo@example.com","password":"demo1234"}' http://localhost:3000/auth/login
 curl -b cookies.txt http://localhost:3000/auth/me
+curl -b cookies.txt http://localhost:3000/protected
 curl -b cookies.txt -c cookies.txt -X POST http://localhost:3000/auth/logout
 
-# Users - requires a JWT. Log in first and reuse the cookie jar, or pass the
-# token via the Authorization header (see the "Auth routes" section above).
+# Users - requires a logged-in Passport session. Log in first and reuse the cookie jar.
 curl -c cookies.txt -X POST -H "Content-Type: application/json" \
-  -d '{"username":"demo","password":"demo1234"}' http://localhost:3000/auth/login
+  -d '{"email":"demo@example.com","password":"demo1234"}' http://localhost:3000/auth/login
 curl -b cookies.txt http://localhost:3000/users
 curl -b cookies.txt http://localhost:3000/users/1
 curl -b cookies.txt -X POST -H "Content-Type: application/json" \
@@ -308,13 +332,14 @@ curl -X PUT -H "x-role: admin" http://localhost:3000/articles/2
 curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/2
 
 # Error cases
-curl http://localhost:3000/users                                    # 401 - no token
+curl http://localhost:3000/users                                    # 401 - no session
+curl http://localhost:3000/protected                                # 401 - no session
 curl -b cookies.txt http://localhost:3000/users/abc                 # 400 - invalid userId
 curl -b cookies.txt http://localhost:3000/users/999                 # 404 - HTML "not found" page (PUG)
 curl http://localhost:3000/articles/999                             # 404 - HTML "not found" page (EJS)
 curl -X POST http://localhost:3000/articles                         # 403 - guest role can't write
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"username":"demo","password":"wrong"}' http://localhost:3000/auth/login  # 401 - bad credentials
+  -d '{"email":"demo@example.com","password":"wrong"}' http://localhost:3000/auth/login  # 401 - bad credentials
 curl -i -X POST -d "theme=neon" http://localhost:3000/theme         # 400 - invalid theme value
 curl http://localhost:3000/some/unknown/path                        # 404 - unknown route
 curl -X POST -H "Content-Type: application/json" -d '{invalid-json' \

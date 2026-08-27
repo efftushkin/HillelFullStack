@@ -1,76 +1,74 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const passport = require('../config/passport');
 const accounts = require('../data/accounts');
-const { JWT_SECRET, JWT_EXPIRES_IN, TOKEN_COOKIE_NAME, TOKEN_COOKIE_MAX_AGE } = require('../config/jwt');
 
-function issueToken(res, account) {
-  const token = jwt.sign({ id: account.id, username: account.username }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
-
-  res.cookie(TOKEN_COOKIE_NAME, token, {
-    httpOnly: true,
-    maxAge: TOKEN_COOKIE_MAX_AGE,
-    sameSite: 'lax',
-  });
-
-  return token;
+function toSafeAccount(account) {
+  return { id: account.id, email: account.email };
 }
 
-function register(req, res) {
-  const { username, password } = req.body || {};
+function register(req, res, next) {
+  const { email, password } = req.body || {};
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Missing required fields: username and password' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Missing required fields: email and password' });
   }
 
-  if (accounts.some((account) => account.username === username)) {
-    return res.status(409).json({ message: `Username "${username}" is already taken` });
+  if (accounts.some((account) => account.email === email)) {
+    return res.status(409).json({ message: `Email "${email}" is already registered` });
   }
 
   const account = {
     id: accounts.length ? Math.max(...accounts.map((a) => a.id)) + 1 : 1,
-    username,
+    email,
     passwordHash: bcrypt.hashSync(password, 10),
   };
   accounts.push(account);
 
-  const token = issueToken(res, account);
-  res.status(201).json({
-    message: 'Registration successful',
-    user: { id: account.id, username: account.username },
-    token,
+  req.login(account, (err) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.status(201).json({ message: 'Registration successful', user: toSafeAccount(account) });
   });
 }
 
-function login(req, res) {
-  const { username, password } = req.body || {};
+function login(req, res, next) {
+  passport.authenticate('local', (err, account, info) => {
+    if (err) {
+      return next(err);
+    }
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Missing required fields: username and password' });
-  }
+    if (!account) {
+      return res.status(401).json({ message: (info && info.message) || 'Invalid email or password' });
+    }
 
-  const account = accounts.find((a) => a.username === username);
+    req.login(account, (loginErr) => {
+      if (loginErr) {
+        return next(loginErr);
+      }
 
-  if (!account || !bcrypt.compareSync(password, account.passwordHash)) {
-    return res.status(401).json({ message: 'Invalid username or password' });
-  }
-
-  const token = issueToken(res, account);
-  res.json({
-    message: 'Login successful',
-    user: { id: account.id, username: account.username },
-    token,
-  });
+      res.json({ message: 'Login successful', user: toSafeAccount(account) });
+    });
+  })(req, res, next);
 }
 
-function logout(req, res) {
-  res.clearCookie(TOKEN_COOKIE_NAME);
-  res.json({ message: 'Logout successful' });
+function logout(req, res, next) {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json({ message: 'Logout successful' });
+  });
 }
 
 function getCurrentUser(req, res) {
-  res.json({ user: req.user });
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+
+  res.json({ user: toSafeAccount(req.user) });
 }
 
 module.exports = { register, login, logout, getCurrentUser };

@@ -1,5 +1,5 @@
 const express = require('express');
-const authenticate = require('../middlewares/auth');
+const ensureAuthenticated = require('../middlewares/auth');
 const { validateUserInput, validateUserId } = require('../middlewares/validateUser');
 const {
   getUsers,
@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-router.use(authenticate);
+router.use(ensureAuthenticated);
 
 router.get('/', getUsers);
 router.post('/', validateUserInput, createUser);

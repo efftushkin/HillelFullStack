@@ -2,9 +2,11 @@ const path = require('path');
 const express = require('express');
 const ejs = require('ejs');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const passport = require('./config/passport');
+const { SESSION_SECRET, SESSION_COOKIE_NAME, SESSION_COOKIE_MAX_AGE } = require('./config/session');
 const routes = require('./routes');
 const requestLogger = require('./middlewares/logger');
-const sessionManager = require('./middlewares/session');
 const themeLoader = require('./middlewares/theme');
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 
@@ -18,9 +20,25 @@ app.engine('ejs', ejs.renderFile);
 
 app.use(requestLogger);
 app.use(cookieParser());
-app.use(sessionManager);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    name: SESSION_COOKIE_NAME,
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      // Only sent over HTTPS in production - the app runs over plain HTTP in
+      // local development, where a `secure` cookie would never reach the server.
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: SESSION_COOKIE_MAX_AGE,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 // Serves static assets from src/public, including /favicon.ico requested by every page.
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(themeLoader);

@@ -1,5 +1,5 @@
 const WRITE_ROLES = ['admin', 'editor'];
-const WRITE_METHODS = ['POST', 'PUT', 'DELETE'];
+const WRITE_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 function checkArticleAccess(req, res, next) {
   const role = req.headers['x-role'] || 'guest';

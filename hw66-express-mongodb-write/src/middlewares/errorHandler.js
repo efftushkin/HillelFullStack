@@ -10,6 +10,14 @@ function errorHandler(err, req, res, next) {
     return res.status(400).send('Invalid JSON payload in request body.');
   }
 
+  if (err.name === 'ValidationError' || err.name === 'CastError') {
+    return res.status(400).json({ message: `Invalid data: ${err.message}` });
+  }
+
+  if (err.code === 11000) {
+    return res.status(409).json({ message: 'Duplicate key error.', detail: err.message });
+  }
+
   const statusCode = err.statusCode || 500;
   res.status(statusCode).send(`Internal server error: ${err.message}`);
 }

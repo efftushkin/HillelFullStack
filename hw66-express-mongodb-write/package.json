@@ -1,5 +1,5 @@
 {
-  "name": "hw65-express-mongodb",
+  "name": "hw66-express-mongodb-write",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -22,11 +22,19 @@
     "favicon",
     "mongodb",
     "mongoose",
-    "atlas"
+    "atlas",
+    "crud",
+    "insertOne",
+    "insertMany",
+    "updateOne",
+    "updateMany",
+    "replaceOne",
+    "deleteOne",
+    "deleteMany"
   ],
   "author": "",
   "license": "ISC",
-  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes, and reading the /articles data from a MongoDB Atlas collection via Mongoose.",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes, and reading/writing the /articles data in a MongoDB Atlas collection via Mongoose (find with projection, insertOne/insertMany, updateOne/updateMany/replaceOne, deleteOne/deleteMany).",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",

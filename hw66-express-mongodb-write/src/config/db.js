@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'hw65-express-mongodb';
+const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'hw66-express-mongodb-write';
 
 async function connectDB() {
   if (!MONGODB_URI) {

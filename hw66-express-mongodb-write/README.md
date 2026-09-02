@@ -1,19 +1,20 @@
-# hw65-express-mongodb
+# hw66-express-mongodb-write
 
-A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw64-express-passport`) by integrating the server with a **MongoDB Atlas** database via **Mongoose**:
+A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw65-express-mongodb`), which only *read* the `articles` collection from **MongoDB Atlas**, by adding full **create / update / delete** support on top of it, via **Mongoose**:
 
 - a shared **favicon** served on every HTML page (PUG and EJS alike);
 - a **theme preference** (light/dark) persisted in a cookie via `cookie-parser`;
 - **Passport-based authentication** — a `passport-local` strategy validates an email/password pair, and `express-session` persists the resulting login state server-side, identified by a session id stored in an `httpOnly` cookie;
 - a **protected route** (`GET /protected`), plus the pre-existing `GET /users*` routes and `GET /auth/me`, all guarded by a Passport-session middleware that only lets a request through when it carries a valid, logged-in session;
-- a **MongoDB Atlas connection** (via [Mongoose](https://mongoosejs.com/)), with the `GET /articles` and `GET /articles/:articleId` pages now reading their data from a real `articles` collection in the database instead of an in-memory array.
+- a **MongoDB Atlas connection** (via [Mongoose](https://mongoosejs.com/)), with the `GET /articles` and `GET /articles/:articleId` pages reading their data from a real `articles` collection in the database instead of an in-memory array;
+- **new in this homework** - full write support on the `articles` collection: `insertOne` / `insertMany` (create), `updateOne` / `updateMany` / `replaceOne` (update), `deleteOne` / `deleteMany` (delete), plus an extended read endpoint using `find()` with a **projection**. See [MongoDB Atlas Integration](#mongodb-atlas-integration) for the full breakdown.
 
-The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Write operations (`POST`/`PUT`/`DELETE`) still return plain text/JSON.
+The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Every other route, including all the new `/articles` write routes and the `/articles/search` read route, exchanges **JSON**.
 
 ## Project Structure
 
 ```
-hw65-express-mongodb/
+hw66-express-mongodb-write/
 ├── index.js                       # Entry point - loads .env, connects to MongoDB, then starts the server
 ├── .env                            # Local MongoDB Atlas credentials (git-ignored, not committed)
 ├── .env.example                    # Template listing the required environment variables
@@ -27,7 +28,7 @@ hw65-express-mongodb/
 │   ├── controllers/                # Request handling logic (the "C" in MVC)
 │   │   ├── rootController.js
 │   │   ├── usersController.js      # Renders PUG views for GET /users and GET /users/:userId
-│   │   ├── articlesController.js   # Renders EJS views for GET /articles and GET /articles/:articleId, reading from MongoDB
+│   │   ├── articlesController.js   # GET /articles* (EJS + find/projection) and all the write routes below - see MongoDB Atlas Integration
 │   │   ├── authController.js       # Register/login/logout/me - built on Passport + express-session
 │   │   ├── protectedController.js  # GET /protected - sample route guarded by a valid session
 │   │   └── themeController.js      # Saves the chosen theme into a cookie
@@ -44,13 +45,14 @@ hw65-express-mongodb/
 │   │   ├── auth.js                 # ensureAuthenticated - checks req.isAuthenticated() (Passport session)
 │   │   ├── theme.js                # Reads the theme cookie into res.locals.theme for every view
 │   │   ├── validateUser.js         # Validation for user data/params
-│   │   ├── articleAccess.js        # Access control + validation for articles
-│   │   └── errorHandler.js         # 404 and centralized error handling
+│   │   ├── articleAccess.js        # Access control (role check) + :articleId validation for articles
+│   │   ├── validateArticleBody.js  # NEW - request body validation for every articles write route
+│   │   └── errorHandler.js         # 404 and centralized error handling (incl. Mongoose validation/cast/duplicate-key errors)
 │   ├── routes/                     # Route definitions, mapped to controllers + middlewares
 │   │   ├── index.js                # Aggregates all route modules
 │   │   ├── rootRoutes.js
 │   │   ├── usersRoutes.js
-│   │   ├── articlesRoutes.js
+│   │   ├── articlesRoutes.js       # Now includes insertOne/insertMany/updateOne/updateMany/replaceOne/deleteOne/deleteMany routes
 │   │   ├── authRoutes.js           # /auth/register, /auth/login, /auth/logout, /auth/me
 │   │   ├── protectedRoutes.js      # /protected
 │   │   └── themeRoutes.js          # /theme
@@ -100,11 +102,11 @@ Controllers contain the logic for handling each request, route modules define wh
 
    ```
    MONGODB_URI="mongodb+srv://<username>:<password>@<cluster-host>"
-   MONGODB_DB_NAME="hw65-express-mongodb"
+   MONGODB_DB_NAME="hw66-express-mongodb-write"
    ```
 
    - `MONGODB_URI` is the Atlas SRV connection string (from **Atlas → Connect → Drivers**), including your database user's username and password.
-   - `MONGODB_DB_NAME` is the database name Mongoose connects to (created automatically on first write if it doesn't exist yet).
+   - `MONGODB_DB_NAME` is the database name Mongoose connects to (created automatically on first write if it doesn't exist yet). This homework uses its own database (`hw66-express-mongodb-write`), separate from `hw65-express-mongodb`, so that testing the new write routes (especially `insertMany`/`updateMany`/`deleteMany`) never touches the previous homework's data.
    - In **Atlas → Network Access**, make sure your current IP address (or `0.0.0.0/0` for unrestricted access during development) is on the cluster's IP access list, otherwise the connection is rejected.
    - `.env` is git-ignored and never committed - see [MongoDB Atlas Integration](#mongodb-atlas-integration) below for details.
 
@@ -125,7 +127,7 @@ npm start
 The server first connects to MongoDB Atlas, then starts listening on port **3000**. You should see:
 
 ```
-Connected to MongoDB Atlas (database: hw65-express-mongodb)
+Connected to MongoDB Atlas (database: hw66-express-mongodb-write)
 Server is running on http://localhost:3000
 ```
 
@@ -165,7 +167,7 @@ Every HTML template includes:
 
 ## MongoDB Atlas Integration
 
-The server is connected to a [MongoDB Atlas](https://www.mongodb.com/atlas) cluster using [Mongoose](https://mongoosejs.com/), MongoDB's Object Data Modeling (ODM) library for Node.js. The `articles` collection replaces the in-memory `src/data/articles.js` array as the data source for the `GET /articles` and `GET /articles/:articleId` pages.
+The server is connected to a [MongoDB Atlas](https://www.mongodb.com/atlas) cluster using [Mongoose](https://mongoosejs.com/), MongoDB's Object Data Modeling (ODM) library for Node.js. The `articles` collection replaces the in-memory `src/data/articles.js` array as the data source for every `/articles` route - both the two HTML read pages carried over from `hw65-express-mongodb` and the JSON write/search routes added in this homework.
 
 | Piece | File | Purpose |
 | --- | --- | --- |
@@ -176,29 +178,256 @@ The server is connected to a [MongoDB Atlas](https://www.mongodb.com/atlas) clus
 
 **Startup sequence** (`index.js`): `dotenv` loads `.env` → `connectDB()` establishes the Mongoose connection → only once that succeeds does `app.listen()` start accepting HTTP requests. This avoids serving requests that would otherwise fail because the database isn't reachable yet.
 
-**Read route** (`src/controllers/articlesController.js`):
+Every handler below is an `async` function that calls a method directly on the `Article` Mongoose model. Mongoose's `Model.insertOne` / `insertMany` / `updateOne` / `updateMany` / `replaceOne` / `deleteOne` / `deleteMany` are thin wrappers around the identically-named methods of the underlying MongoDB Node.js driver `Collection` - they accept the same filter/update documents and return the same `{ acknowledged, matchedCount, modifiedCount, ... }` / `{ acknowledged, deletedCount }` results, while still applying the `Article` schema's casting and validation. Express 5 automatically forwards a rejected promise from an `async` route handler to `errorHandler` (`src/middlewares/errorHandler.js`), so a database error (a validation failure, a bad cast, a dropped connection) still results in a proper JSON error response instead of an unhandled rejection.
+
+All new write routes require the `x-role: admin` or `x-role: editor` header, exactly like the pre-existing `POST`/`PUT`/`DELETE` article routes (see `checkArticleAccess`, under [Middlewares](#middlewares) below) - `PATCH` was added to the set of methods it guards.
+
+### Read: `find()` with a projection
+
+| Method | Path | Middlewares | Purpose |
+| --- | --- | --- | --- |
+| GET | `/articles` | access control | HTML page (EJS) — unchanged from `hw65-express-mongodb`, still `Article.find().sort({ id: 1 })`. |
+| GET | `/articles/:articleId` | access control, validate id | HTML page (EJS) — unchanged, still `Article.findOne({ id })`. |
+| GET | `/articles/search` | access control | **New.** JSON list, built on `Article.find(filter, projection)`. |
+
+`GET /articles/search` (`searchArticles` in `articlesController.js`) accepts three optional query parameters:
+
+- `author` - case-insensitive substring filter (`{ author: /value/i }`).
+- `id` - exact numeric filter (`{ id: Number(value) }`); `400` if it isn't a number.
+- `fields` - a comma-separated **projection**, passed as the second argument to `find()`. `fields=title,author` returns only those fields (inclusion); `fields=-content` returns everything *except* `content` (exclusion). Mixing inclusion and exclusion in the same request is rejected with `400`, same as MongoDB itself would reject it. `_id` is always dropped from the response.
 
 ```js
-const getArticles = async (req, res) => {
-  const articles = await Article.find().sort({ id: 1 });
-  res.render('articles/list.ejs', { title: 'Articles', articles });
-};
-
-const getArticleById = async (req, res) => {
-  const { articleId } = req.params;
-  const article = await Article.findOne({ id: Number(articleId) });
-  // ...renders articles/details.ejs, or a 404 page if not found
+const searchArticles = async (req, res) => {
+  const { author, id, fields } = req.query;
+  const filter = {};
+  if (author) filter.author = new RegExp(escapeRegExp(author), 'i');
+  if (id !== undefined) filter.id = Number(id); // 400 first if NaN
+  const { projection } = buildProjection(fields); // { _id: 0, title: 1, author: 1 }, etc.
+  const articles = await Article.find(filter, projection).sort({ id: 1 });
+  res.json({ count: articles.length, articles });
 };
 ```
-
-Both handlers are `async` functions that query MongoDB through the `Article` model and pass the resulting document(s) straight into the existing EJS views (`articles/list.ejs`, `articles/details.ejs`) - no changes were needed in the views themselves, since Mongoose documents expose the same field names the views already used. Express 5 automatically forwards a rejected promise from an `async` route handler to `errorHandler` (`src/middlewares/errorHandler.js`), so a database error (e.g. a dropped connection) still results in a proper `500` response instead of an unhandled rejection.
 
 ```bash
-# List and detail pages now come from MongoDB Atlas
-curl http://localhost:3000/articles
-curl http://localhost:3000/articles/2
-curl http://localhost:3000/articles/999   # 404 - no article with this id in the collection
+curl "http://localhost:3000/articles/search"                              # find(), no filter/projection
+curl "http://localhost:3000/articles/search?fields=title,author"          # find(filter, { title: 1, author: 1, _id: 0 })
+curl "http://localhost:3000/articles/search?fields=-content"              # find(filter, { content: 0, _id: 0 })
+curl "http://localhost:3000/articles/search?author=jane&fields=title"     # find({ author: /jane/i }, { title: 1, _id: 0 })
+curl "http://localhost:3000/articles/search?fields=title,-content"        # 400 - mixed inclusion/exclusion
 ```
+
+Expected response for `GET /articles/search?fields=title,author`:
+
+```json
+{
+  "count": 3,
+  "articles": [
+    { "title": "Getting Started with Express.js", "author": "John Doe" },
+    { "title": "Understanding Middleware in Express", "author": "Jane Smith" },
+    { "title": "Templating with PUG and EJS", "author": "Mike Wilson" }
+  ]
+}
+```
+
+### Create: `insertOne()` and `insertMany()`
+
+| Method | Path | Middlewares | Body | Response |
+| --- | --- | --- | --- | --- |
+| POST | `/articles` | access control (admin/editor), validate body | `{ "title", "author", "publishedAt", "content" }` | `201` + `{ message, article }` |
+| POST | `/articles/many` | access control (admin/editor), validate body | A JSON array of the same shape | `201` + `{ message, articles }` |
+
+Both handlers use `Article.insertOne(doc)` / `Article.insertMany(docs)` directly - Mongoose's `insertOne` builds a document and calls `.save()` on it (so it's validated against the schema), and `insertMany` does the same for every item in the array. The numeric `id` is always **assigned by the server**, not taken from the request body: `getNextArticleId()` reads the current highest `id` in the collection (`Article.findOne().sort({ id: -1 })`) and increments it, so newly-created articles keep working with the existing `:articleId` routes without any risk of a duplicate-key clash.
+
+```js
+const createArticle = async (req, res) => {
+  const { title, author, publishedAt, content } = req.body;
+  const id = await getNextArticleId();
+  const article = await Article.insertOne({ id, title, author, publishedAt, content });
+  res.status(201).json({ message: 'Article created', article });
+};
+```
+
+```bash
+# insertOne
+curl -X POST -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Deploying Node.js Apps","author":"Alice Wong","publishedAt":"2024-06-01","content":"A guide to deploying Node apps."}' \
+  http://localhost:3000/articles
+
+# insertMany
+curl -X POST -H "Content-Type: application/json" -H "x-role: editor" \
+  -d '[{"title":"CSS Grid Basics","author":"Bob Lee","publishedAt":"2024-06-05","content":"Intro to CSS Grid."},{"title":"Flexbox 101","author":"Bob Lee","publishedAt":"2024-06-06","content":"Intro to Flexbox."}]' \
+  http://localhost:3000/articles/many
+```
+
+Expected response for the `insertOne` request above (`id` is auto-assigned to the next free number, `4` on a freshly-seeded database):
+
+```json
+{
+  "message": "Article created",
+  "article": {
+    "id": 4,
+    "title": "Deploying Node.js Apps",
+    "author": "Alice Wong",
+    "publishedAt": "2024-06-01",
+    "content": "A guide to deploying Node apps.",
+    "_id": "6a989aa786220cb1221ebcc6"
+  }
+}
+```
+
+Expected response for the `insertMany` request above (ids `5` and `6` follow on from the `insertOne` call):
+
+```json
+{
+  "message": "2 article(s) created",
+  "articles": [
+    { "id": 5, "title": "CSS Grid Basics", "author": "Bob Lee", "publishedAt": "2024-06-05", "content": "Intro to CSS Grid.", "_id": "6a989aa786220cb1221ebcc7" },
+    { "id": 6, "title": "Flexbox 101", "author": "Bob Lee", "publishedAt": "2024-06-06", "content": "Intro to Flexbox.", "_id": "6a989aa786220cb1221ebcc8" }
+  ]
+}
+```
+
+`validateArticlePayload` / `validateArticlesPayload` (`src/middlewares/validateArticleBody.js`) reject a request with `400` before it reaches MongoDB if any required field is missing, empty, or not a string (or if the `/many` body isn't a non-empty array):
+
+```bash
+curl -i -X POST -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Missing stuff"}' http://localhost:3000/articles
+# 400 {"message":"Missing or invalid required field(s): author, publishedAt, content"}
+```
+
+### Update: `updateOne()`, `updateMany()` and `replaceOne()`
+
+| Method | Path | Middlewares | Body | Response |
+| --- | --- | --- | --- | --- |
+| PATCH | `/articles/:articleId` | access control, validate id, validate body | Any subset of `{ title, author, publishedAt, content }` | `200` + `{ message, article }`, or `404` |
+| PATCH | `/articles` | access control, validate body | `{ "filter": {...}, "update": {...} }` | `200` + `{ message, matchedCount, modifiedCount }` |
+| PUT | `/articles/:articleId` | access control, validate id, validate body | Full `{ "title", "author", "publishedAt", "content" }` | `200` + `{ message, article }`, or `404` |
+
+`PATCH /articles/:articleId` (`updateArticleById`) is a partial update - it runs `Article.updateOne({ id }, { $set: updates })`, so only the fields present in the body are changed and everything else on the document is left untouched. `PUT /articles/:articleId` (`replaceArticleById`) is a full replacement - it runs `Article.replaceOne({ id }, { id, title, author, publishedAt, content })`, so the *entire* document is swapped out for a new one (only the numeric `id` is carried over from the URL, never from the body, so the article keeps its identity). Both re-fetch the document with `findOne` after the write so the response shows the actual state in the database, and both return `404` when `matchedCount` is `0` (no article with that id).
+
+`PATCH /articles` (`updateArticles`) is the bulk case - it applies `Article.updateMany(filter, { $set: update })`, where both `filter` (which documents to touch) and `update` (which fields to `$set` on all of them) come straight from the request body.
+
+```js
+// updateOne
+const result = await Article.updateOne({ id }, { $set: updates });
+// updateMany
+const result = await Article.updateMany(filter, { $set: update });
+// replaceOne
+const result = await Article.replaceOne({ id }, { id, title, author, publishedAt, content });
+```
+
+```bash
+# updateOne - change just the title of article id 4
+curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/4
+
+# updateMany - rename every article by "Bob Lee" (both id 5 and id 6, inserted
+# by the insertMany example above) to "Robert Lee"
+curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"filter":{"author":"Bob Lee"},"update":{"author":"Robert Lee"}}' http://localhost:3000/articles
+
+# replaceOne - swap the whole document for article id 5
+curl -X PUT -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"CSS Grid Fundamentals","author":"Bob A. Lee","publishedAt":"2024-06-05","content":"Fully rewritten intro to CSS Grid."}' \
+  http://localhost:3000/articles/5
+```
+
+Expected response for the `updateOne` request above:
+
+```json
+{
+  "message": "Article updated",
+  "article": {
+    "_id": "6a989aa786220cb1221ebcc6",
+    "id": 4,
+    "title": "Deploying Node.js Apps to Production",
+    "author": "Alice Wong",
+    "publishedAt": "2024-06-01",
+    "content": "A guide to deploying Node apps."
+  }
+}
+```
+
+Expected response for the `updateMany` request above (both id 5 and id 6 match `author: "Bob Lee"`):
+
+```json
+{ "message": "Articles updated", "matchedCount": 2, "modifiedCount": 2 }
+```
+
+Expected response for the `replaceOne` request above - the whole document for id 5 is now this and nothing else (no leftover fields from before the replacement):
+
+```json
+{
+  "message": "Article replaced",
+  "article": {
+    "_id": "6a989aa786220cb1221ebcc7",
+    "id": 5,
+    "title": "CSS Grid Fundamentals",
+    "author": "Bob A. Lee",
+    "publishedAt": "2024-06-05",
+    "content": "Fully rewritten intro to CSS Grid."
+  }
+}
+```
+
+`replaceOne` overwrote id 5's `author` back to `"Bob A. Lee"`, so only id 6 is left with `author: "Robert Lee"` - which is exactly the article the `deleteMany` example in the next section removes.
+
+`validatePartialArticlePayload` rejects an empty body or an unknown field with `400`; `validateBulkUpdatePayload` rejects a `PATCH /articles` body unless both `filter` and `update` are non-empty objects. Updating (or replacing) an id that doesn't exist returns `404`:
+
+```bash
+curl -i -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"x"}' http://localhost:3000/articles/999
+# 404 {"message":"Article with id 999 not found"}
+```
+
+### Delete: `deleteOne()` and `deleteMany()`
+
+| Method | Path | Middlewares | Body | Response |
+| --- | --- | --- | --- | --- |
+| DELETE | `/articles/:articleId` | access control, validate id | — | `200` + `{ message }`, or `404` |
+| DELETE | `/articles` | access control, validate body | `{ "filter": {...} }` | `200` + `{ message, deletedCount }` |
+
+```js
+// deleteOne
+const result = await Article.deleteOne({ id: Number(articleId) });
+// deleteMany
+const result = await Article.deleteMany(filter);
+```
+
+```bash
+# deleteOne
+curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/4
+# {"message":"Article with id 4 deleted"}
+
+# deleteMany - remove every article by "Robert Lee"
+curl -X DELETE -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"filter":{"author":"Robert Lee"}}' http://localhost:3000/articles
+# {"message":"Articles deleted","deletedCount":1}
+```
+
+`DELETE /articles` refuses an empty or missing `filter` with `400` (`validateBulkDeletePayload`), specifically so a call with no body can't accidentally wipe out the entire `articles` collection:
+
+```bash
+curl -i -X DELETE -H "Content-Type: application/json" -H "x-role: admin" -d '{}' http://localhost:3000/articles
+# 400 {"message":"Request body must contain a non-empty \"filter\" object to avoid deleting the entire collection."}
+```
+
+`DELETE /articles/:articleId` returns `404` when nothing matches the id:
+
+```bash
+curl -i -X DELETE -H "x-role: admin" http://localhost:3000/articles/999
+# 404 {"message":"Article with id 999 not found"}
+```
+
+### Errors surfaced from MongoDB/Mongoose
+
+`errorHandler.js` was extended to turn the errors these new write routes can raise into proper JSON responses instead of a generic `500`:
+
+| Error | Cause | Response |
+| --- | --- | --- |
+| `ValidationError` | A required schema field is missing/invalid at the database layer (defense-in-depth behind the body-validation middlewares) | `400` + `{ message: "Invalid data: ..." }` |
+| `CastError` | A field couldn't be cast to its schema type (e.g. a non-numeric `id` reaching a query) | `400` + `{ message: "Invalid data: ..." }` |
+| Duplicate key (`code 11000`) | An `insertOne`/`insertMany` collided with the unique `id` index | `409` + `{ message: "Duplicate key error.", detail: ... }` |
 
 ## Cookies: Theme Preference
 
@@ -291,7 +520,7 @@ curl -i -b cookies.txt http://localhost:3000/protected   # 401
 | `express.static` | Express built-in | Serves `src/public/` (CSS and `favicon.ico`). |
 | `themeLoader` | `src/middlewares/theme.js` | Reads the `theme` cookie into `res.locals.theme` for every view render. |
 | `notFoundHandler` | `src/middlewares/errorHandler.js` | Runs after all routes; returns a plain-text `404` for any URL that doesn't match a defined route. |
-| `errorHandler` | `src/middlewares/errorHandler.js` | Centralized 4-argument Express error handler. Logs the error, returns `400` for malformed JSON bodies, and `500` (or `err.statusCode`) for anything else. |
+| `errorHandler` | `src/middlewares/errorHandler.js` | Centralized 4-argument Express error handler. Logs the error, returns `400` for malformed JSON bodies or a Mongoose `ValidationError`/`CastError`, `409` for a MongoDB duplicate-key error, and `500` (or `err.statusCode`) for anything else. See [Errors surfaced from MongoDB/Mongoose](#errors-surfaced-from-mongodbmongoose). |
 
 ### `/users` and `/users/:userId` middlewares (`src/routes/usersRoutes.js`)
 
@@ -305,8 +534,13 @@ curl -i -b cookies.txt http://localhost:3000/protected   # 401
 
 | Middleware | File | Applied to | Purpose |
 | --- | --- | --- | --- |
-| `checkArticleAccess` | `src/middlewares/articleAccess.js` | All `/articles` routes | Reads the `x-role` request header (defaults to `guest`). `GET` requests are allowed for any role; `POST`/`PUT`/`DELETE` require role `admin` or `editor`, otherwise responds `403`. |
-| `validateArticleId` | `src/middlewares/articleAccess.js` | Routes with `:articleId` (`GET/PUT/DELETE /articles/:articleId`) | Responds `400` unless `articleId` is a numeric string. |
+| `checkArticleAccess` | `src/middlewares/articleAccess.js` | All `/articles` routes | Reads the `x-role` request header (defaults to `guest`). `GET` requests are allowed for any role; `POST`/`PUT`/`PATCH`/`DELETE` require role `admin` or `editor`, otherwise responds `403`. |
+| `validateArticleId` | `src/middlewares/articleAccess.js` | Routes with `:articleId` (`GET/PUT/PATCH/DELETE /articles/:articleId`) | Responds `400` unless `articleId` is a numeric string. |
+| `validateArticlePayload` | `src/middlewares/validateArticleBody.js` | `POST /articles` (insertOne), `PUT /articles/:articleId` (replaceOne) | Responds `400` unless `title`, `author`, `publishedAt` and `content` are all present, non-empty strings. |
+| `validateArticlesPayload` | `src/middlewares/validateArticleBody.js` | `POST /articles/many` (insertMany) | Responds `400` unless the body is a non-empty array where every item passes the same field check as above. |
+| `validatePartialArticlePayload` | `src/middlewares/validateArticleBody.js` | `PATCH /articles/:articleId` (updateOne) | Responds `400` if the body is empty or contains a field outside `{ title, author, publishedAt, content, id }`. |
+| `validateBulkUpdatePayload` | `src/middlewares/validateArticleBody.js` | `PATCH /articles` (updateMany) | Responds `400` unless the body has both a non-empty `filter` object and a non-empty `update` object. |
+| `validateBulkDeletePayload` | `src/middlewares/validateArticleBody.js` | `DELETE /articles` (deleteMany) | Responds `400` unless the body has a non-empty `filter` object, so a missing filter can't wipe the whole collection. |
 
 ### `/protected` middlewares (`src/routes/protectedRoutes.js`)
 
@@ -316,7 +550,7 @@ curl -i -b cookies.txt http://localhost:3000/protected   # 401
 
 ## API Routes
 
-The read (`GET`) routes for `/users` and `/articles` render **HTML** pages (PUG or EJS, see [Template Engines](#template-engines)); the `/auth` routes return **JSON**; every other route still returns plain text.
+`GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` render **HTML** pages (PUG or EJS, see [Template Engines](#template-engines)); the `/auth` routes and every `/articles` write route (`POST`/`PUT`/`PATCH`/`DELETE`) plus `GET /articles/search` return **JSON**; the remaining `/users` write routes and the root route still return plain text.
 
 ### Root
 
@@ -354,15 +588,20 @@ Requires a valid, logged-in Passport session (see [Passport Authentication and S
 
 ### Articles
 
-Optionally send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). `GET` routes read from the MongoDB Atlas `articles` collection (ids `1`–`3`, seeded via `npm run seed` from `src/data/articles.js` - see [MongoDB Atlas Integration](#mongodb-atlas-integration)); `POST`/`PUT`/`DELETE` remain unimplemented stubs.
+Send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`PATCH`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). Data lives in the MongoDB Atlas `articles` collection (ids `1`–`3`, seeded via `npm run seed` from `src/data/articles.js`). The two `GET` routes below render HTML (unchanged from `hw65-express-mongodb`); every write route and `GET /articles/search` exchange JSON - see [MongoDB Atlas Integration](#mongodb-atlas-integration) for the full write-up with example request/response bodies for each one.
 
 | Method | Path | Middlewares | Response |
 | --- | --- | --- | --- |
-| GET | `/articles` | access control | HTML page (EJS) — list of articles |
-| POST | `/articles` | access control (admin/editor only) | `Post articles route` |
-| GET | `/articles/:articleId` | access control, validate id | HTML page (EJS) — article details, or a `404` HTML page if the id is unknown |
-| PUT | `/articles/:articleId` | access control (admin/editor only), validate id | `Put article by Id route: {articleId}` |
-| DELETE | `/articles/:articleId` | access control (admin/editor only), validate id | `Delete article by Id route: {articleId}` |
+| GET | `/articles` | access control | HTML page (EJS) — list of articles (`Article.find()`) |
+| GET | `/articles/search` | access control | JSON — `Article.find(filter, projection)`, filterable by `author`/`id`, `fields` query param selects/excludes fields |
+| GET | `/articles/:articleId` | access control, validate id | HTML page (EJS) — article details (`Article.findOne()`), or a `404` HTML page if the id is unknown |
+| POST | `/articles` | access control (admin/editor), validate body | `201` + `{ message, article }` — `Article.insertOne()`, `id` auto-assigned |
+| POST | `/articles/many` | access control (admin/editor), validate body | `201` + `{ message, articles }` — `Article.insertMany()`, an array of articles |
+| PUT | `/articles/:articleId` | access control (admin/editor), validate id, validate body | `200` + `{ message, article }`, or `404` — `Article.replaceOne()` |
+| PATCH | `/articles/:articleId` | access control (admin/editor), validate id, validate body | `200` + `{ message, article }`, or `404` — `Article.updateOne()` |
+| PATCH | `/articles` | access control (admin/editor), validate body | `200` + `{ message, matchedCount, modifiedCount }` — `Article.updateMany()`, body `{ filter, update }` |
+| DELETE | `/articles/:articleId` | access control (admin/editor), validate id | `200` + `{ message }`, or `404` — `Article.deleteOne()` |
+| DELETE | `/articles` | access control (admin/editor), validate body | `200` + `{ message, deletedCount }` — `Article.deleteMany()`, body `{ filter }` (required, non-empty) |
 
 ### Example requests
 
@@ -398,9 +637,26 @@ curl -b cookies.txt -X DELETE http://localhost:3000/users/1
 # pages can be opened directly in a browser
 curl http://localhost:3000/articles
 curl http://localhost:3000/articles/2
-curl -X POST -H "x-role: editor" http://localhost:3000/articles
-curl -X PUT -H "x-role: admin" http://localhost:3000/articles/2
-curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/2
+curl "http://localhost:3000/articles/search?fields=title,author"
+
+# Articles - write routes need an admin/editor role. See "MongoDB Atlas
+# Integration" above for the full request/response pairs for each one.
+curl -X POST -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Deploying Node.js Apps","author":"Alice Wong","publishedAt":"2024-06-01","content":"A guide to deploying Node apps."}' \
+  http://localhost:3000/articles
+curl -X POST -H "Content-Type: application/json" -H "x-role: editor" \
+  -d '[{"title":"CSS Grid Basics","author":"Bob Lee","publishedAt":"2024-06-05","content":"Intro to CSS Grid."},{"title":"Flexbox 101","author":"Bob Lee","publishedAt":"2024-06-06","content":"Intro to Flexbox."}]' \
+  http://localhost:3000/articles/many
+curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/4
+curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"filter":{"author":"Bob Lee"},"update":{"author":"Robert Lee"}}' http://localhost:3000/articles
+curl -X PUT -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"CSS Grid Fundamentals","author":"Bob A. Lee","publishedAt":"2024-06-05","content":"Fully rewritten intro to CSS Grid."}' \
+  http://localhost:3000/articles/5
+curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/4
+curl -X DELETE -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"filter":{"author":"Robert Lee"}}' http://localhost:3000/articles
 
 # Error cases
 curl http://localhost:3000/users                                    # 401 - no session
@@ -409,6 +665,12 @@ curl -b cookies.txt http://localhost:3000/users/abc                 # 400 - inva
 curl -b cookies.txt http://localhost:3000/users/999                 # 404 - HTML "not found" page (PUG)
 curl http://localhost:3000/articles/999                             # 404 - HTML "not found" page (EJS)
 curl -X POST http://localhost:3000/articles                         # 403 - guest role can't write
+curl -X POST -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"Missing stuff"}' http://localhost:3000/articles     # 400 - missing required fields
+curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{"title":"x"}' http://localhost:3000/articles/999             # 404 - JSON "not found", no article with this id
+curl -X DELETE -H "Content-Type: application/json" -H "x-role: admin" \
+  -d '{}' http://localhost:3000/articles                            # 400 - deleteMany refuses an empty filter
 curl -X POST -H "Content-Type: application/json" \
   -d '{"email":"demo@example.com","password":"wrong"}' http://localhost:3000/auth/login  # 401 - bad credentials
 curl -i -X POST -d "theme=neon" http://localhost:3000/theme         # 400 - invalid theme value

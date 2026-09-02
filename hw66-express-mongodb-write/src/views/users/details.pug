@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+  a.back-link(href="/users") ← Back to users
+  h1.page-title= user.username
+  div.detail-card
+    dl
+      dt ID
+      dd= user.id
+      dt Email
+      dd= user.email
+      dt Role
+      dd= user.role
+      dt Created At
+      dd= user.createdAt

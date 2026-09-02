@@ -1,35 +1,43 @@
-# hw64-express-passport
+# hw65-express-mongodb
 
-A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw63-express-jwt`) by replacing the JWT-based authentication with **Passport**:
+A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw64-express-passport`) by integrating the server with a **MongoDB Atlas** database via **Mongoose**:
 
 - a shared **favicon** served on every HTML page (PUG and EJS alike);
 - a **theme preference** (light/dark) persisted in a cookie via `cookie-parser`;
 - **Passport-based authentication** — a `passport-local` strategy validates an email/password pair, and `express-session` persists the resulting login state server-side, identified by a session id stored in an `httpOnly` cookie;
-- a **protected route** (`GET /protected`), plus the pre-existing `GET /users*` routes and `GET /auth/me`, all guarded by a Passport-session middleware that only lets a request through when it carries a valid, logged-in session.
+- a **protected route** (`GET /protected`), plus the pre-existing `GET /users*` routes and `GET /auth/me`, all guarded by a Passport-session middleware that only lets a request through when it carries a valid, logged-in session;
+- a **MongoDB Atlas connection** (via [Mongoose](https://mongoosejs.com/)), with the `GET /articles` and `GET /articles/:articleId` pages now reading their data from a real `articles` collection in the database instead of an in-memory array.
 
 The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Write operations (`POST`/`PUT`/`DELETE`) still return plain text/JSON.
 
 ## Project Structure
 
 ```
-hw64-express-passport/
-├── index.js                       # Entry point - starts the server on port 3000
+hw65-express-mongodb/
+├── index.js                       # Entry point - loads .env, connects to MongoDB, then starts the server
+├── .env                            # Local MongoDB Atlas credentials (git-ignored, not committed)
+├── .env.example                    # Template listing the required environment variables
 ├── src/
 │   ├── app.js                     # Express app setup, view engines, static files, middleware wiring
 │   ├── config/
+│   │   ├── db.js                  # Connects Mongoose to MongoDB Atlas using MONGODB_URI / MONGODB_DB_NAME
 │   │   ├── passport.js            # Passport local strategy (email/password) + serialize/deserialize
 │   │   ├── session.js             # express-session secret, cookie name and max-age
 │   │   └── theme.js               # Theme cookie name, valid values, default, max-age
 │   ├── controllers/                # Request handling logic (the "C" in MVC)
 │   │   ├── rootController.js
 │   │   ├── usersController.js      # Renders PUG views for GET /users and GET /users/:userId
-│   │   ├── articlesController.js   # Renders EJS views for GET /articles and GET /articles/:articleId
+│   │   ├── articlesController.js   # Renders EJS views for GET /articles and GET /articles/:articleId, reading from MongoDB
 │   │   ├── authController.js       # Register/login/logout/me - built on Passport + express-session
 │   │   ├── protectedController.js  # GET /protected - sample route guarded by a valid session
 │   │   └── themeController.js      # Saves the chosen theme into a cookie
+│   ├── models/
+│   │   └── Article.js              # Mongoose schema/model for the "articles" collection
+│   ├── scripts/
+│   │   └── seedArticles.js         # One-off script (`npm run seed`) that loads src/data/articles.js into MongoDB
 │   ├── data/                       # In-memory sample data used by the views
 │   │   ├── users.js                 # Sample users shown on the /users pages
-│   │   ├── articles.js
+│   │   ├── articles.js              # Seed data for the MongoDB "articles" collection (see seedArticles.js)
 │   │   └── accounts.js              # In-memory auth accounts (email + hashed password)
 │   ├── middlewares/                # Cross-cutting request processing logic
 │   │   ├── logger.js               # Request logging
@@ -73,6 +81,7 @@ Controllers contain the logic for handling each request, route modules define wh
 
 - [Node.js](https://nodejs.org/) (v18 or later recommended)
 - npm
+- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (free tier is enough) with a database user and its connection string
 
 ## Installation
 
@@ -83,6 +92,28 @@ Controllers contain the logic for handling each request, route modules define wh
    npm install
    ```
 
+3. Configure the MongoDB Atlas connection - copy `.env.example` to `.env` and fill in your own values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   ```
+   MONGODB_URI="mongodb+srv://<username>:<password>@<cluster-host>"
+   MONGODB_DB_NAME="hw65-express-mongodb"
+   ```
+
+   - `MONGODB_URI` is the Atlas SRV connection string (from **Atlas → Connect → Drivers**), including your database user's username and password.
+   - `MONGODB_DB_NAME` is the database name Mongoose connects to (created automatically on first write if it doesn't exist yet).
+   - In **Atlas → Network Access**, make sure your current IP address (or `0.0.0.0/0` for unrestricted access during development) is on the cluster's IP access list, otherwise the connection is rejected.
+   - `.env` is git-ignored and never committed - see [MongoDB Atlas Integration](#mongodb-atlas-integration) below for details.
+
+4. Seed the `articles` collection with the sample data (only needed once, or whenever you want to reset it):
+
+   ```bash
+   npm run seed
+   ```
+
 ## Running the Server
 
 Start the server with:
@@ -91,11 +122,14 @@ Start the server with:
 npm start
 ```
 
-The server listens on port **3000**. You should see:
+The server first connects to MongoDB Atlas, then starts listening on port **3000**. You should see:
 
 ```
+Connected to MongoDB Atlas (database: hw65-express-mongodb)
 Server is running on http://localhost:3000
 ```
+
+If the connection fails (bad credentials, IP not whitelisted, etc.), the error is logged and the process exits instead of starting the server without a database.
 
 You can then send requests to `http://localhost:3000` using a browser, `curl`, or a tool like Postman.
 
@@ -114,7 +148,7 @@ app.set('view engine', 'pug');      // default engine, used by usersController
 app.engine('ejs', ejs.renderFile);  // articlesController renders with the explicit .ejs extension
 ```
 
-Sample data for the views lives in `src/data/users.js` and `src/data/articles.js` (in-memory arrays, no database). Requesting an unknown `userId`/`articleId` renders a dedicated "not found" view with a `404` status instead of plain text. A shared stylesheet (`src/public/css/style.css`, served via `express.static`) styles both the PUG and EJS pages consistently (header/nav, theme toggle, card list, detail card, buttons), including a dark-mode palette selected via `[data-theme="dark"]`.
+Sample data for the `/users` pages lives in `src/data/users.js` (an in-memory array, no database). The `/articles` pages read from a MongoDB Atlas `articles` collection instead - see [MongoDB Atlas Integration](#mongodb-atlas-integration). Requesting an unknown `userId`/`articleId` renders a dedicated "not found" view with a `404` status instead of plain text. A shared stylesheet (`src/public/css/style.css`, served via `express.static`) styles both the PUG and EJS pages consistently (header/nav, theme toggle, card list, detail card, buttons), including a dark-mode palette selected via `[data-theme="dark"]`.
 
 ## Static Files & Favicon
 
@@ -128,6 +162,43 @@ Every HTML template includes:
 
 - PUG: `link(rel="icon" href="/favicon.ico")` in `src/views/layout.pug` — inherited by every page that `extends` it (`users/list`, `users/details`, `users/not-found`).
 - EJS: the same `<link>` tag in `src/views/partials/header.ejs` — included by every EJS page (`articles/list`, `articles/details`, `articles/not-found`).
+
+## MongoDB Atlas Integration
+
+The server is connected to a [MongoDB Atlas](https://www.mongodb.com/atlas) cluster using [Mongoose](https://mongoosejs.com/), MongoDB's Object Data Modeling (ODM) library for Node.js. The `articles` collection replaces the in-memory `src/data/articles.js` array as the data source for the `GET /articles` and `GET /articles/:articleId` pages.
+
+| Piece | File | Purpose |
+| --- | --- | --- |
+| `.env` | project root (git-ignored) | Holds `MONGODB_URI` (the Atlas SRV connection string) and `MONGODB_DB_NAME`. Loaded via [`dotenv`](https://github.com/motdotla/dotenv) at the top of `index.js`. Based on `.env.example`, which documents the required variables without real credentials. |
+| `connectDB()` | `src/config/db.js` | Opens the Mongoose connection with `mongoose.connect(MONGODB_URI, { dbName: MONGODB_DB_NAME })`. Throws a clear error if `MONGODB_URI` is missing. |
+| `Article` model | `src/models/Article.js` | Mongoose schema for one article document: `id` (Number, unique), `title`, `author`, `publishedAt`, `content` (all String, required). The numeric `id` field (not Mongo's `_id`) keeps it compatible with the existing `:articleId` routes and `validateArticleId` middleware, which only accept a plain numeric string. |
+| `seedArticles.js` | `src/scripts/seedArticles.js`, run via `npm run seed` | Connects to the database and upserts each article from `src/data/articles.js` into the `articles` collection, matched by `id`. Safe to run multiple times - it updates existing articles instead of duplicating them. |
+
+**Startup sequence** (`index.js`): `dotenv` loads `.env` → `connectDB()` establishes the Mongoose connection → only once that succeeds does `app.listen()` start accepting HTTP requests. This avoids serving requests that would otherwise fail because the database isn't reachable yet.
+
+**Read route** (`src/controllers/articlesController.js`):
+
+```js
+const getArticles = async (req, res) => {
+  const articles = await Article.find().sort({ id: 1 });
+  res.render('articles/list.ejs', { title: 'Articles', articles });
+};
+
+const getArticleById = async (req, res) => {
+  const { articleId } = req.params;
+  const article = await Article.findOne({ id: Number(articleId) });
+  // ...renders articles/details.ejs, or a 404 page if not found
+};
+```
+
+Both handlers are `async` functions that query MongoDB through the `Article` model and pass the resulting document(s) straight into the existing EJS views (`articles/list.ejs`, `articles/details.ejs`) - no changes were needed in the views themselves, since Mongoose documents expose the same field names the views already used. Express 5 automatically forwards a rejected promise from an `async` route handler to `errorHandler` (`src/middlewares/errorHandler.js`), so a database error (e.g. a dropped connection) still results in a proper `500` response instead of an unhandled rejection.
+
+```bash
+# List and detail pages now come from MongoDB Atlas
+curl http://localhost:3000/articles
+curl http://localhost:3000/articles/2
+curl http://localhost:3000/articles/999   # 404 - no article with this id in the collection
+```
 
 ## Cookies: Theme Preference
 
@@ -283,7 +354,7 @@ Requires a valid, logged-in Passport session (see [Passport Authentication and S
 
 ### Articles
 
-Optionally send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). Sample data comes from `src/data/articles.js` (ids `1`–`3`).
+Optionally send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). `GET` routes read from the MongoDB Atlas `articles` collection (ids `1`–`3`, seeded via `npm run seed` from `src/data/articles.js` - see [MongoDB Atlas Integration](#mongodb-atlas-integration)); `POST`/`PUT`/`DELETE` remain unimplemented stubs.
 
 | Method | Path | Middlewares | Response |
 | --- | --- | --- | --- |

@@ -1,6 +1,7 @@
-const articles = require('../data/articles');
+const Article = require('../models/Article');
 
-const getArticles = (req, res) => {
+const getArticles = async (req, res) => {
+  const articles = await Article.find().sort({ id: 1 });
   res.render('articles/list.ejs', { title: 'Articles', articles });
 };
 
@@ -8,9 +9,9 @@ const createArticle = (req, res) => {
   res.send('Post articles route');
 };
 
-const getArticleById = (req, res) => {
+const getArticleById = async (req, res) => {
   const { articleId } = req.params;
-  const article = articles.find((a) => a.id === Number(articleId));
+  const article = await Article.findOne({ id: Number(articleId) });
 
   if (!article) {
     return res.status(404).render('articles/not-found.ejs', { title: 'Article not found', articleId });

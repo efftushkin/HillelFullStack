@@ -1,9 +1,10 @@
 {
-  "name": "hw64-express-passport",
+  "name": "hw65-express-mongodb",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "seed": "node src/scripts/seedArticles.js"
   },
   "keywords": [
     "express",
@@ -18,17 +19,22 @@
     "express-session",
     "cookies",
     "authentication",
-    "favicon"
+    "favicon",
+    "mongodb",
+    "mongoose",
+    "atlas"
   ],
   "author": "",
   "license": "ISC",
-  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, and providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes.",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes, and reading the /articles data from a MongoDB Atlas collection via Mongoose.",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "mongoose": "^9.9.4",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pug": "^3.0.4"

@@ -1,0 +1,13 @@
+extends ../layout
+
+block content
+  h1.page-title Users
+  p.page-subtitle= `Total users: ${users.length}`
+  ul.card-list
+    each user in users
+      li.card
+        div.card-body
+          h2.card-title= user.username
+          p.card-text Email: #{user.email}
+          p.card-text Role: #{user.role}
+          a.btn(href=`/users/${user.id}`) View details

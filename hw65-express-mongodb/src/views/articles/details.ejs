@@ -1,0 +1,8 @@
+<%- include('../partials/header', { title: title, theme: theme }) %>
+  <a class="back-link" href="/articles">← Back to articles</a>
+  <h1 class="page-title"><%= article.title %></h1>
+  <p class="page-subtitle">By <%= article.author %> · <%= article.publishedAt %></p>
+  <div class="detail-card">
+    <p><%= article.content %></p>
+  </div>
+<%- include('../partials/footer') %>

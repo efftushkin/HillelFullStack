@@ -1,0 +1,36 @@
+{
+  "name": "hw64-express-passport",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express",
+    "rest",
+    "api",
+    "middleware",
+    "pug",
+    "ejs",
+    "templating",
+    "passport",
+    "passport-local",
+    "express-session",
+    "cookies",
+    "authentication",
+    "favicon"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, and providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes.",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pug": "^3.0.4"
+  }
+}

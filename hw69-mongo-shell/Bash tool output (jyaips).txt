@@ -1,0 +1,335 @@
+Exit code 1
+
+--- insertMany: 5 student documents ---
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('6a99e3649343fb05e1d1da99'),
+    '1': ObjectId('6a99e3649343fb05e1d1da9a'),
+    '2': ObjectId('6a99e3649343fb05e1d1da9b'),
+    '3': ObjectId('6a99e3649343fb05e1d1da9c'),
+    '4': ObjectId('6a99e3649343fb05e1d1da9d')
+  }
+}
+
+--- find({ score: { $gt: 80 } }) ---
+{
+  _id: ObjectId('6a99e3649343fb05e1d1da99'),
+  name: 'Олена Коваленко',
+  subject: 'Математика',
+  score: 92
+}
+{
+  _id: ObjectId('6a99e3649343fb05e1d1da9c'),
+  name: 'Іван Петренко',
+  subject: 'Математика',
+  score: 88
+}
+
+--- updateOne: +5 score for a student with score < 85 ---
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+--- lowest-scoring student (about to be deleted) ---
+{
+  _id: ObjectId('6a99e3649343fb05e1d1da9b'),
+  name: 'Марія Бондаренко',
+  subject: 'Історія',
+  score: 55
+}
+--- deleteOne({ _id: lowest._id }) ---
+{
+  acknowledged: true,
+  deletedCount: 1
+}
+
+--- find({}, { name: 1, score: 1, _id: 0 }) ---
+{
+  name: 'Олена Коваленко',
+  score: 92
+}
+{
+  name: 'Андрій Шевченко',
+  score: 83
+}
+{
+  name: 'Іван Петренко',
+  score: 88
+}
+{
+  name: 'Оксана Мельник',
+  score: 60
+}
+
+--- aggregate: average score by subject ---
+{
+  _id: 'Математика',
+  avgScore: 90
+}
+{
+  _id: 'Фізика',
+  avgScore: 71.5
+}
+
+--- aggregate: same pipeline + $match avgScore > 75 ---
+{
+  _id: 'Математика',
+  avgScore: 90
+}
+
+--- explain("executionStats") BEFORE the index on "name" ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'studentDB.assignments',
+    parsedQuery: {
+      name: {
+        '$regex': '^А'
+      }
+    },
+    indexFilterSet: false,
+    queryHash: '04AC9D8B',
+    planCacheShapeHash: '04AC9D8B',
+    planCacheKey: 'A7971EF7',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'COLLSCAN',
+      filter: {
+        name: {
+          '$regex': '^А'
+        }
+      },
+      direction: 'forward'
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 0,
+    totalKeysExamined: 0,
+    totalDocsExamined: 4,
+    executionStages: {
+      isCached: false,
+      stage: 'COLLSCAN',
+      filter: {
+        name: {
+          '$regex': '^А'
+        }
+      },
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      works: 5,
+      advanced: 1,
+      needTime: 3,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      direction: 'forward',
+      docsExamined: 4
+    }
+  },
+  queryShapeHash: '4FA84C7A15654E2798BE12C08D787C9E79C9855C2CD50A946D35B279919D7764',
+  command: {
+    find: 'assignments',
+    filter: {
+      name: {
+        '$regex': '^А'
+      }
+    },
+    '$db': 'studentDB'
+  },
+  serverInfo: {
+    host: 'ac-beaiuhi-shard-00-01.coni20t.mongodb.net',
+    port: 27017,
+    version: '8.0.30',
+    gitVersion: '360770fbc9b6a893748150d2ab2799e119b9fac9'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 16793600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 33554432,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1788470115, i: 6 }),
+    signature: {
+      hash: Binary.createFromBase64('k4GD2z5bd0zxXVROX/hWEAM0xtE=', 0),
+      keyId: Long('7643139060533297154')
+    }
+  },
+  operationTime: Timestamp({ t: 1788470115, i: 6 })
+}
+
+--- createIndex({ name: 1 }, { unique: true }) ---
+name_1
+
+--- find({ name: { $regex: "^А" } }) ---
+{
+  _id: ObjectId('6a99e3649343fb05e1d1da9a'),
+  name: 'Андрій Шевченко',
+  subject: 'Фізика',
+  score: 83
+}
+
+--- explain("executionStats") AFTER the index on "name" ---
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'studentDB.assignments',
+    parsedQuery: {
+      name: {
+        '$regex': '^А'
+      }
+    },
+    indexFilterSet: false,
+    queryHash: '04AC9D8B',
+    planCacheShapeHash: '04AC9D8B',
+    planCacheKey: '98C49F92',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: {
+          name: 1
+        },
+        indexName: 'name_1',
+        isMultiKey: false,
+        multiKeyPaths: {
+          name: []
+        },
+        isUnique: true,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          name: [
+            '["А", "Б")',
+            '[/^А/, /^А/]'
+          ]
+        }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 0,
+    totalKeysExamined: 2,
+    totalDocsExamined: 1,
+    executionStages: {
+      isCached: false,
+      stage: 'FETCH',
+      nReturned: 1,
+      executionTimeMillisEstimate: 0,
+      works: 3,
+      advanced: 1,
+      needTime: 1,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 1,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 1,
+        executionTimeMillisEstimate: 0,
+        works: 3,
+        advanced: 1,
+        needTime: 1,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: {
+          name: 1
+        },
+        indexName: 'name_1',
+        isMultiKey: false,
+        multiKeyPaths: {
+          name: []
+        },
+        isUnique: true,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          name: [
+            '["А", "Б")',
+            '[/^А/, /^А/]'
+          ]
+        },
+        keysExamined: 2,
+        seeks: 2,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  queryShapeHash: '4FA84C7A15654E2798BE12C08D787C9E79C9855C2CD50A946D35B279919D7764',
+  command: {
+    find: 'assignments',
+    filter: {
+      name: {
+        '$regex': '^А'
+      }
+    },
+    '$db': 'studentDB'
+  },
+  serverInfo: {
+    host: 'ac-beaiuhi-shard-00-01.coni20t.mongodb.net',
+    port: 27017,
+    version: '8.0.30',
+    gitVersion: '360770fbc9b6a893748150d2ab2799e119b9fac9'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 16793600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 33554432,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1,
+  '$clusterTime': {
+    clusterTime: Timestamp({ t: 1788470115, i: 14 }),
+    signature: {
+      hash: Binary.createFromBase64('k4GD2z5bd0zxXVROX/hWEAM0xtE=', 0),
+      keyId: Long('7643139060533297154')
+    }
+  },
+  operationTime: Timestamp({ t: 1788470115, i: 14 })
+}
+Error: Telemetry setup is missing userId or anonymousId

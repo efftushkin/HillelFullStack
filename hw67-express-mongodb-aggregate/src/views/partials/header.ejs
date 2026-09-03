@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="<%= theme %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="/">HW63 Server</a>
+      <div class="header-actions">
+        <nav>
+          <a href="/users">Users</a>
+          <a href="/articles">Articles</a>
+        </nav>
+        <form class="theme-form" action="/theme" method="POST">
+          <button class="theme-btn <%= theme === 'light' ? 'active' : '' %>" type="submit" name="theme" value="light">☀ Light</button>
+          <button class="theme-btn <%= theme === 'dark' ? 'active' : '' %>" type="submit" name="theme" value="dark">🌙 Dark</button>
+        </form>
+      </div>
+    </div>
+  </header>
+  <main class="container">

@@ -1,20 +1,24 @@
-# hw66-express-mongodb-write
+# hw67-express-mongodb-aggregate
 
-A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw65-express-mongodb`), which only *read* the `articles` collection from **MongoDB Atlas**, by adding full **create / update / delete** support on top of it, via **Mongoose**:
+A **Node.js** and **Express.js** RESTful API server, built on the **MVC (Model-View-Controller)** architectural pattern. It extends the previous homework (`hw66-express-mongodb-write`), which added full **create / update / delete** support over a MongoDB Atlas `articles` collection via **Mongoose**, by adding:
 
 - a shared **favicon** served on every HTML page (PUG and EJS alike);
 - a **theme preference** (light/dark) persisted in a cookie via `cookie-parser`;
 - **Passport-based authentication** — a `passport-local` strategy validates an email/password pair, and `express-session` persists the resulting login state server-side, identified by a session id stored in an `httpOnly` cookie;
 - a **protected route** (`GET /protected`), plus the pre-existing `GET /users*` routes and `GET /auth/me`, all guarded by a Passport-session middleware that only lets a request through when it carries a valid, logged-in session;
-- a **MongoDB Atlas connection** (via [Mongoose](https://mongoosejs.com/)), with the `GET /articles` and `GET /articles/:articleId` pages reading their data from a real `articles` collection in the database instead of an in-memory array;
-- **new in this homework** - full write support on the `articles` collection: `insertOne` / `insertMany` (create), `updateOne` / `updateMany` / `replaceOne` (update), `deleteOne` / `deleteMany` (delete), plus an extended read endpoint using `find()` with a **projection**. See [MongoDB Atlas Integration](#mongodb-atlas-integration) for the full breakdown.
+- a **MongoDB Atlas connection** (via [Mongoose](https://mongoosejs.com/)), with full read/write support on the `articles` collection: `find()` with a projection, `insertOne` / `insertMany`, `updateOne` / `updateMany` / `replaceOne`, `deleteOne` / `deleteMany`;
+- **new in this homework** - two ways of working with a collection without ever holding every one of its documents in memory or in the response payload as a single array:
+  - **cursor-based routes** (`GET /articles/export`, `GET /articles/stats/cursor-summary`) that iterate the `articles` collection with a MongoDB **cursor**, one document (or one small batch) at a time, instead of `find()`-ing the whole collection into an array first;
+  - **aggregation-pipeline routes** (`GET /articles/stats/summary`, `GET /articles/stats/by-author`) that use `aggregate()` to compute non-trivial statistics - averages, min/max, distinct-author counts, a per-year breakdown - directly on the database server, so only the small, already-reduced result crosses the network.
 
-The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Every other route, including all the new `/articles` write routes and the `/articles/search` read route, exchanges **JSON**.
+  See [Cursors: streaming and manual iteration over a cursor](#cursors-streaming-and-manual-iteration-over-a-cursor) and [Aggregation: statistics with `aggregate()`](#aggregation-statistics-with-aggregate) for the full breakdown, including why each of these is more efficient than `find()` + in-memory reduction once the collection is large.
+
+The `GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` pages are rendered as HTML using template engines — **PUG** for users, **EJS** for articles. Every other route, including all the `/articles` write routes and the new cursor/aggregation routes, exchanges **JSON** (`GET /articles/export` exchanges **NDJSON**, one JSON document per line - see below).
 
 ## Project Structure
 
 ```
-hw66-express-mongodb-write/
+hw67-express-mongodb-aggregate/
 ├── index.js                       # Entry point - loads .env, connects to MongoDB, then starts the server
 ├── .env                            # Local MongoDB Atlas credentials (git-ignored, not committed)
 ├── .env.example                    # Template listing the required environment variables
@@ -28,7 +32,7 @@ hw66-express-mongodb-write/
 │   ├── controllers/                # Request handling logic (the "C" in MVC)
 │   │   ├── rootController.js
 │   │   ├── usersController.js      # Renders PUG views for GET /users and GET /users/:userId
-│   │   ├── articlesController.js   # GET /articles* (EJS + find/projection) and all the write routes below - see MongoDB Atlas Integration
+│   │   ├── articlesController.js   # GET /articles* (EJS + find/projection), the cursor/aggregation stats+export routes, and all the write routes below - see MongoDB Atlas Integration
 │   │   ├── authController.js       # Register/login/logout/me - built on Passport + express-session
 │   │   ├── protectedController.js  # GET /protected - sample route guarded by a valid session
 │   │   └── themeController.js      # Saves the chosen theme into a cookie
@@ -38,7 +42,7 @@ hw66-express-mongodb-write/
 │   │   └── seedArticles.js         # One-off script (`npm run seed`) that loads src/data/articles.js into MongoDB
 │   ├── data/                       # In-memory sample data used by the views
 │   │   ├── users.js                 # Sample users shown on the /users pages
-│   │   ├── articles.js              # Seed data for the MongoDB "articles" collection (see seedArticles.js)
+│   │   ├── articles.js              # Seed data for the MongoDB "articles" collection - several articles per author, dates spread across 2022-2024 (see seedArticles.js)
 │   │   └── accounts.js              # In-memory auth accounts (email + hashed password)
 │   ├── middlewares/                # Cross-cutting request processing logic
 │   │   ├── logger.js               # Request logging
@@ -52,7 +56,7 @@ hw66-express-mongodb-write/
 │   │   ├── index.js                # Aggregates all route modules
 │   │   ├── rootRoutes.js
 │   │   ├── usersRoutes.js
-│   │   ├── articlesRoutes.js       # Now includes insertOne/insertMany/updateOne/updateMany/replaceOne/deleteOne/deleteMany routes
+│   │   ├── articlesRoutes.js       # Now includes /export, /stats/summary, /stats/by-author, /stats/cursor-summary plus insertOne/insertMany/updateOne/updateMany/replaceOne/deleteOne/deleteMany routes
 │   │   ├── authRoutes.js           # /auth/register, /auth/login, /auth/logout, /auth/me
 │   │   ├── protectedRoutes.js      # /protected
 │   │   └── themeRoutes.js          # /theme
@@ -110,7 +114,7 @@ Controllers contain the logic for handling each request, route modules define wh
    - In **Atlas → Network Access**, make sure your current IP address (or `0.0.0.0/0` for unrestricted access during development) is on the cluster's IP access list, otherwise the connection is rejected.
    - `.env` is git-ignored and never committed - see [MongoDB Atlas Integration](#mongodb-atlas-integration) below for details.
 
-4. Seed the `articles` collection with the sample data (only needed once, or whenever you want to reset it):
+4. Seed the `articles` collection with the sample data - **20 articles across 6 authors** (2-4 articles each), with `publishedAt` dates spread across 2022-2024 so the statistics routes below have something meaningful to group over (only needed once, or whenever you want to reset the collection back to this sample data):
 
    ```bash
    npm run seed
@@ -216,18 +220,179 @@ curl "http://localhost:3000/articles/search?author=jane&fields=title"     # find
 curl "http://localhost:3000/articles/search?fields=title,-content"        # 400 - mixed inclusion/exclusion
 ```
 
-Expected response for `GET /articles/search?fields=title,author`:
+Expected response for `GET /articles/search?id=2&fields=title,author`:
 
 ```json
 {
-  "count": 3,
+  "count": 1,
   "articles": [
-    { "title": "Getting Started with Express.js", "author": "John Doe" },
-    { "title": "Understanding Middleware in Express", "author": "Jane Smith" },
-    { "title": "Templating with PUG and EJS", "author": "Mike Wilson" }
+    { "title": "Understanding Middleware in Express", "author": "Jane Smith" }
   ]
 }
 ```
+
+### Cursors: streaming and manual iteration over a cursor
+
+`Article.find(...)` (used above) returns a Mongoose `Query`; `await`-ing it (or calling `.exec()`) fetches **every** matching document from MongoDB and materializes it into a single JavaScript array before your code sees any of it - fine for a few dozen articles, but for a large collection that means holding the whole result set in memory at once and only starting to write a response after the *last* document has arrived. Calling `.cursor()` instead of `await`-ing the query returns a **cursor**: the driver fetches documents from the server in batches (101 documents by default) as you iterate it, so at any point in time only the current batch needs to be in memory - not the whole collection.
+
+| Method | Path | Middlewares | Purpose |
+| --- | --- | --- | --- |
+| GET | `/articles/export` | access control | **New.** Streams every article as [NDJSON](http://ndjson.org/) (one JSON object per line), written to the response as the cursor yields each document. |
+| GET | `/articles/stats/cursor-summary` | access control | **New.** Iterates a cursor and accumulates totals (count, unique authors, average content length/word count) manually in Node, instead of an aggregation pipeline. |
+
+`exportArticles` (`GET /articles/export`) never builds an array of articles at all - it opens a cursor with a projection (`{ _id: 0 }`) that drops the internal `_id`, then uses a `for await...of` loop (supported directly on a Mongoose cursor, since it implements the async iterator protocol) to write each document to the response as soon as it's available:
+
+```js
+const exportArticles = async (req, res) => {
+  res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8');
+  const cursor = Article.find({}, { _id: 0 }).sort({ id: 1 }).lean().cursor();
+  try {
+    for await (const article of cursor) {
+      res.write(`${JSON.stringify(article)}\n`);
+    }
+  } finally {
+    res.end();
+  }
+};
+```
+
+`getCursorStatsSummary` (`GET /articles/stats/cursor-summary`) shows the other reason to reach for a cursor: sometimes the reduction logic is easiest to express as plain JavaScript rather than an aggregation pipeline. It still only ever holds *one* article's `author`/`content` in memory at a time while it accumulates the running totals, rather than `find()`-ing the whole collection into an array first and then calling `.reduce()` on it:
+
+```js
+const cursor = Article.find({}, { author: 1, content: 1, _id: 0 }).lean().cursor();
+let articlesCount = 0, totalContentLength = 0, totalWordCount = 0;
+const authors = new Set();
+for await (const article of cursor) {
+  articlesCount += 1;
+  totalContentLength += article.content.length;
+  totalWordCount += article.content.trim().split(/\s+/).filter(Boolean).length;
+  authors.add(article.author);
+}
+```
+
+```bash
+# Export - streamed as NDJSON, one article per line
+curl http://localhost:3000/articles/export
+
+# Cursor-based manual statistics
+curl http://localhost:3000/articles/stats/cursor-summary
+```
+
+Expected response (first two lines only) for `GET /articles/export` against the seeded data - the `Content-Type` is `application/x-ndjson`, not `application/json`, precisely because the body isn't one JSON value but a sequence of independent ones separated by newlines:
+
+```
+{"id":1,"title":"Getting Started with Express.js","author":"John Doe","publishedAt":"2024-01-20","content":"Express.js is a minimal and flexible Node.js web application framework..."}
+{"id":2,"title":"Understanding Middleware in Express","author":"Jane Smith","publishedAt":"2024-02-18","content":"Middleware functions are functions that have access..."}
+```
+
+Expected response for `GET /articles/stats/cursor-summary` against the 20 seeded articles:
+
+```json
+{ "articlesCount": 20, "uniqueAuthorsCount": 6, "avgContentLength": 209.2, "avgWordCount": 33.15 }
+```
+
+**Why this matters at scale:** with `find()`, the server has to hold all `N` documents in memory, serialize them into one JSON array, and only then start sending bytes - a client (or a slow network) has to wait for the *entire* array before it can start processing. With a cursor, the app's memory footprint stays roughly constant regardless of `N` (bounded by the batch size, not the collection size), and `res.write()` sends the first document to the client as soon as it's fetched, well before the rest of the collection has even been read from MongoDB. For `/articles/stats/cursor-summary` specifically, the alternative would be `Article.find()` followed by `.reduce()` in Node - which still requires materializing every document (including every `content` string) into an array first, exactly the cost a cursor is meant to avoid.
+
+### Aggregation: statistics with `aggregate()`
+
+An aggregation pipeline runs a sequence of stages (`$match`, `$group`, `$sort`, `$facet`, ...) **on the database server**, so the app only ever receives the already-reduced result - not the raw documents that went into computing it. That's the key difference from the cursor-based `/articles/stats/cursor-summary` above: same kind of numbers, but computed by MongoDB instead of by Node, and with only the small aggregated result crossing the network instead of every article's full `content`.
+
+| Method | Path | Middlewares | Purpose |
+| --- | --- | --- | --- |
+| GET | `/articles/stats/by-author` | access control | **New.** Per-author statistics via `$group` - article count, average word count/content length, first/last `publishedAt`, titles. |
+| GET | `/articles/stats/summary` | access control | **New.** Collection-wide statistics via `$facet` - totals, average/min/max content length, distinct-author count, and a per-year breakdown. |
+
+`getAuthorStats` (`GET /articles/stats/by-author`) computes derived fields once with `$addFields` (word count via `$split`/`$size`, character count via `$strLenCP`), then groups by `$author`:
+
+```js
+const stats = await Article.aggregate([
+  { $addFields: {
+      wordCount: { $size: { $split: ['$content', ' '] } },
+      contentLength: { $strLenCP: '$content' },
+  } },
+  { $group: {
+      _id: '$author',
+      articlesCount: { $sum: 1 },
+      avgWordCount: { $avg: '$wordCount' },
+      avgContentLength: { $avg: '$contentLength' },
+      firstPublishedAt: { $min: '$publishedAt' },
+      lastPublishedAt: { $max: '$publishedAt' },
+      titles: { $push: '$title' },
+  } },
+  { $sort: { articlesCount: -1, _id: 1 } },
+  { $project: { _id: 0, author: '$_id', articlesCount: 1,
+      avgWordCount: { $round: ['$avgWordCount', 2] },
+      avgContentLength: { $round: ['$avgContentLength', 2] },
+      firstPublishedAt: 1, lastPublishedAt: 1, titles: 1 } },
+]);
+```
+
+`getStatsSummary` (`GET /articles/stats/summary`) uses `$facet` to run three independent grouping pipelines over the same input documents in a single database round trip: an `overall` group (`_id: null`, so every document falls into one bucket) for the collection-wide totals/average/min/max, a `uniqueAuthors` pipeline (`$group` by `$author` with no accumulator, immediately followed by `$count`) for the number of **distinct** authors, and an `articlesPerYear` pipeline that derives a `year` from the `publishedAt` string (`$substrCP` + `$toInt`) and groups by it:
+
+```js
+const [result] = await Article.aggregate([
+  { $addFields: {
+      wordCount: { $size: { $split: ['$content', ' '] } },
+      contentLength: { $strLenCP: '$content' },
+      year: { $toInt: { $substrCP: ['$publishedAt', 0, 4] } },
+  } },
+  { $facet: {
+      overall: [{ $group: { _id: null, totalArticles: { $sum: 1 },
+          avgContentLength: { $avg: '$contentLength' }, avgWordCount: { $avg: '$wordCount' },
+          minContentLength: { $min: '$contentLength' }, maxContentLength: { $max: '$contentLength' } } }],
+      uniqueAuthors: [{ $group: { _id: '$author' } }, { $count: 'count' }],
+      articlesPerYear: [
+        { $group: { _id: '$year', articlesCount: { $sum: 1 } } },
+        { $sort: { _id: 1 } },
+        { $project: { _id: 0, year: '$_id', articlesCount: 1 } },
+      ],
+  } },
+]);
+```
+
+```bash
+curl "http://localhost:3000/articles/stats/by-author"
+curl "http://localhost:3000/articles/stats/summary"
+```
+
+Expected response for `GET /articles/stats/summary` against the 20 seeded articles (6 authors, dates spread across 2022/2023/2024):
+
+```json
+{
+  "totalArticles": 20,
+  "uniqueAuthorsCount": 6,
+  "avgContentLength": 209.2,
+  "avgWordCount": 33.15,
+  "minContentLength": 142,
+  "maxContentLength": 328,
+  "articlesPerYear": [
+    { "articlesCount": 6, "year": 2022 },
+    { "articlesCount": 8, "year": 2023 },
+    { "articlesCount": 6, "year": 2024 }
+  ]
+}
+```
+
+Expected response for `GET /articles/stats/by-author` (truncated to the first entry - the full response has one object per author, sorted by `articlesCount` descending):
+
+```json
+{
+  "authorsCount": 6,
+  "stats": [
+    {
+      "articlesCount": 4,
+      "firstPublishedAt": "2022-03-15",
+      "lastPublishedAt": "2024-04-10",
+      "titles": ["Introduction to MongoDB Atlas", "Designing Schemas with Mongoose", "Indexing Strategies for MongoDB Collections", "Connection Pooling and Performance in Mongoose"],
+      "author": "Alice Johnson",
+      "avgWordCount": 35.75,
+      "avgContentLength": 220.75
+    }
+  ]
+}
+```
+
+**Why this matters at scale:** computing these same numbers by hand would mean `Article.find()`-ing every document (including every `content` string) back to the app and reducing them in JavaScript - transferring the entire collection over the network just to throw away everything except a handful of numbers. `aggregate()` does the filtering, grouping and math on the database server, next to the data, and sends back only the reduced result - a few hundred bytes instead of the whole collection, and a cost that stays flat as the collection grows instead of scaling with it. Note that `avgContentLength`/`avgWordCount` above match `GET /articles/stats/cursor-summary` exactly (`209.2` / `33.15` either way) - same computation, two different places to run it.
 
 ### Create: `insertOne()` and `insertMany()`
 
@@ -259,30 +424,30 @@ curl -X POST -H "Content-Type: application/json" -H "x-role: editor" \
   http://localhost:3000/articles/many
 ```
 
-Expected response for the `insertOne` request above (`id` is auto-assigned to the next free number, `4` on a freshly-seeded database):
+Expected response for the `insertOne` request above (`id` is auto-assigned to the next free number - `21` on the freshly-seeded 20-article database):
 
 ```json
 {
   "message": "Article created",
   "article": {
-    "id": 4,
+    "id": 21,
     "title": "Deploying Node.js Apps",
     "author": "Alice Wong",
     "publishedAt": "2024-06-01",
     "content": "A guide to deploying Node apps.",
-    "_id": "6a989aa786220cb1221ebcc6"
+    "_id": "6a99d4b9dbb72dbf75fd5633"
   }
 }
 ```
 
-Expected response for the `insertMany` request above (ids `5` and `6` follow on from the `insertOne` call):
+Expected response for the `insertMany` request above (ids `22` and `23` follow on from the `insertOne` call):
 
 ```json
 {
   "message": "2 article(s) created",
   "articles": [
-    { "id": 5, "title": "CSS Grid Basics", "author": "Bob Lee", "publishedAt": "2024-06-05", "content": "Intro to CSS Grid.", "_id": "6a989aa786220cb1221ebcc7" },
-    { "id": 6, "title": "Flexbox 101", "author": "Bob Lee", "publishedAt": "2024-06-06", "content": "Intro to Flexbox.", "_id": "6a989aa786220cb1221ebcc8" }
+    { "id": 22, "title": "CSS Grid Basics", "author": "Bob Lee", "publishedAt": "2024-06-05", "content": "Intro to CSS Grid.", "_id": "6a99d4b9dbb72dbf75fd5634" },
+    { "id": 23, "title": "Flexbox 101", "author": "Bob Lee", "publishedAt": "2024-06-06", "content": "Intro to Flexbox.", "_id": "6a99d4b9dbb72dbf75fd5635" }
   ]
 }
 ```
@@ -317,19 +482,19 @@ const result = await Article.replaceOne({ id }, { id, title, author, publishedAt
 ```
 
 ```bash
-# updateOne - change just the title of article id 4
+# updateOne - change just the title of article id 21
 curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
-  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/4
+  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/21
 
-# updateMany - rename every article by "Bob Lee" (both id 5 and id 6, inserted
+# updateMany - rename every article by "Bob Lee" (both id 22 and id 23, inserted
 # by the insertMany example above) to "Robert Lee"
 curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
   -d '{"filter":{"author":"Bob Lee"},"update":{"author":"Robert Lee"}}' http://localhost:3000/articles
 
-# replaceOne - swap the whole document for article id 5
+# replaceOne - swap the whole document for article id 22
 curl -X PUT -H "Content-Type: application/json" -H "x-role: admin" \
   -d '{"title":"CSS Grid Fundamentals","author":"Bob A. Lee","publishedAt":"2024-06-05","content":"Fully rewritten intro to CSS Grid."}' \
-  http://localhost:3000/articles/5
+  http://localhost:3000/articles/22
 ```
 
 Expected response for the `updateOne` request above:
@@ -338,8 +503,8 @@ Expected response for the `updateOne` request above:
 {
   "message": "Article updated",
   "article": {
-    "_id": "6a989aa786220cb1221ebcc6",
-    "id": 4,
+    "_id": "6a99d4b9dbb72dbf75fd5633",
+    "id": 21,
     "title": "Deploying Node.js Apps to Production",
     "author": "Alice Wong",
     "publishedAt": "2024-06-01",
@@ -348,20 +513,20 @@ Expected response for the `updateOne` request above:
 }
 ```
 
-Expected response for the `updateMany` request above (both id 5 and id 6 match `author: "Bob Lee"`):
+Expected response for the `updateMany` request above (both id 22 and id 23 match `author: "Bob Lee"`):
 
 ```json
 { "message": "Articles updated", "matchedCount": 2, "modifiedCount": 2 }
 ```
 
-Expected response for the `replaceOne` request above - the whole document for id 5 is now this and nothing else (no leftover fields from before the replacement):
+Expected response for the `replaceOne` request above - the whole document for id 22 is now this and nothing else (no leftover fields from before the replacement):
 
 ```json
 {
   "message": "Article replaced",
   "article": {
-    "_id": "6a989aa786220cb1221ebcc7",
-    "id": 5,
+    "_id": "6a99d4b9dbb72dbf75fd5634",
+    "id": 22,
     "title": "CSS Grid Fundamentals",
     "author": "Bob A. Lee",
     "publishedAt": "2024-06-05",
@@ -370,7 +535,7 @@ Expected response for the `replaceOne` request above - the whole document for id
 }
 ```
 
-`replaceOne` overwrote id 5's `author` back to `"Bob A. Lee"`, so only id 6 is left with `author: "Robert Lee"` - which is exactly the article the `deleteMany` example in the next section removes.
+`replaceOne` overwrote id 22's `author` back to `"Bob A. Lee"`, so only id 23 is left with `author: "Robert Lee"` - which is exactly the article the `deleteMany` example in the next section removes.
 
 `validatePartialArticlePayload` rejects an empty body or an unknown field with `400`; `validateBulkUpdatePayload` rejects a `PATCH /articles` body unless both `filter` and `update` are non-empty objects. Updating (or replacing) an id that doesn't exist returns `404`:
 
@@ -396,8 +561,8 @@ const result = await Article.deleteMany(filter);
 
 ```bash
 # deleteOne
-curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/4
-# {"message":"Article with id 4 deleted"}
+curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/21
+# {"message":"Article with id 21 deleted"}
 
 # deleteMany - remove every article by "Robert Lee"
 curl -X DELETE -H "Content-Type: application/json" -H "x-role: admin" \
@@ -550,7 +715,7 @@ curl -i -b cookies.txt http://localhost:3000/protected   # 401
 
 ## API Routes
 
-`GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` render **HTML** pages (PUG or EJS, see [Template Engines](#template-engines)); the `/auth` routes and every `/articles` write route (`POST`/`PUT`/`PATCH`/`DELETE`) plus `GET /articles/search` return **JSON**; the remaining `/users` write routes and the root route still return plain text.
+`GET /users`, `GET /users/:userId`, `GET /articles` and `GET /articles/:articleId` render **HTML** pages (PUG or EJS, see [Template Engines](#template-engines)); the `/auth` routes, every `/articles` write route (`POST`/`PUT`/`PATCH`/`DELETE`), `GET /articles/search` and the three `GET /articles/stats/*` routes return **JSON**; `GET /articles/export` returns **NDJSON**; the remaining `/users` write routes and the root route still return plain text.
 
 ### Root
 
@@ -588,12 +753,16 @@ Requires a valid, logged-in Passport session (see [Passport Authentication and S
 
 ### Articles
 
-Send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`PATCH`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). Data lives in the MongoDB Atlas `articles` collection (ids `1`–`3`, seeded via `npm run seed` from `src/data/articles.js`). The two `GET` routes below render HTML (unchanged from `hw65-express-mongodb`); every write route and `GET /articles/search` exchange JSON - see [MongoDB Atlas Integration](#mongodb-atlas-integration) for the full write-up with example request/response bodies for each one.
+Send header `x-role: admin` or `x-role: editor` to perform write operations (`POST`/`PUT`/`PATCH`/`DELETE`); reads (`GET`) work for any role, including no header at all (defaults to `guest`). Data lives in the MongoDB Atlas `articles` collection (ids `1`–`20`, seeded via `npm run seed` from `src/data/articles.js`). The two `GET` routes below render HTML (unchanged from `hw65-express-mongodb`); every write route, the search/export/stats routes all exchange JSON (`/articles/export` exchanges NDJSON) - see [MongoDB Atlas Integration](#mongodb-atlas-integration) for the full write-up with example request/response bodies for each one.
 
 | Method | Path | Middlewares | Response |
 | --- | --- | --- | --- |
 | GET | `/articles` | access control | HTML page (EJS) — list of articles (`Article.find()`) |
 | GET | `/articles/search` | access control | JSON — `Article.find(filter, projection)`, filterable by `author`/`id`, `fields` query param selects/excludes fields |
+| GET | `/articles/export` | access control | NDJSON (streamed) — every article, one per line, written as a `Article.find().cursor()` yields each document |
+| GET | `/articles/stats/summary` | access control | JSON — collection-wide statistics via `Article.aggregate()` with `$facet` (totals, avg/min/max content length, distinct-author count, per-year breakdown) |
+| GET | `/articles/stats/by-author` | access control | JSON — per-author statistics via `Article.aggregate()` with `$group` (article count, avg word count/content length, first/last `publishedAt`) |
+| GET | `/articles/stats/cursor-summary` | access control | JSON — the same kind of headline numbers as `/stats/summary`, computed manually while iterating a `Article.find().cursor()` instead of via `aggregate()` |
 | GET | `/articles/:articleId` | access control, validate id | HTML page (EJS) — article details (`Article.findOne()`), or a `404` HTML page if the id is unknown |
 | POST | `/articles` | access control (admin/editor), validate body | `201` + `{ message, article }` — `Article.insertOne()`, `id` auto-assigned |
 | POST | `/articles/many` | access control (admin/editor), validate body | `201` + `{ message, articles }` — `Article.insertMany()`, an array of articles |
@@ -637,7 +806,16 @@ curl -b cookies.txt -X DELETE http://localhost:3000/users/1
 # pages can be opened directly in a browser
 curl http://localhost:3000/articles
 curl http://localhost:3000/articles/2
-curl "http://localhost:3000/articles/search?fields=title,author"
+curl "http://localhost:3000/articles/search?id=2&fields=title,author"
+
+# Articles - cursor-based routes (see "Cursors: streaming and manual iteration
+# over a cursor" above)
+curl http://localhost:3000/articles/export                    # NDJSON, streamed one article per line
+curl http://localhost:3000/articles/stats/cursor-summary       # { articlesCount, uniqueAuthorsCount, avgContentLength, avgWordCount }
+
+# Articles - aggregation routes (see "Aggregation: statistics with aggregate()" above)
+curl http://localhost:3000/articles/stats/summary              # totals, avg/min/max content length, distinct authors, per-year breakdown
+curl http://localhost:3000/articles/stats/by-author            # per-author count, avg word count/content length, first/last publishedAt
 
 # Articles - write routes need an admin/editor role. See "MongoDB Atlas
 # Integration" above for the full request/response pairs for each one.
@@ -648,13 +826,13 @@ curl -X POST -H "Content-Type: application/json" -H "x-role: editor" \
   -d '[{"title":"CSS Grid Basics","author":"Bob Lee","publishedAt":"2024-06-05","content":"Intro to CSS Grid."},{"title":"Flexbox 101","author":"Bob Lee","publishedAt":"2024-06-06","content":"Intro to Flexbox."}]' \
   http://localhost:3000/articles/many
 curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
-  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/4
+  -d '{"title":"Deploying Node.js Apps to Production"}' http://localhost:3000/articles/21
 curl -X PATCH -H "Content-Type: application/json" -H "x-role: admin" \
   -d '{"filter":{"author":"Bob Lee"},"update":{"author":"Robert Lee"}}' http://localhost:3000/articles
 curl -X PUT -H "Content-Type: application/json" -H "x-role: admin" \
   -d '{"title":"CSS Grid Fundamentals","author":"Bob A. Lee","publishedAt":"2024-06-05","content":"Fully rewritten intro to CSS Grid."}' \
-  http://localhost:3000/articles/5
-curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/4
+  http://localhost:3000/articles/22
+curl -X DELETE -H "x-role: admin" http://localhost:3000/articles/21
 curl -X DELETE -H "Content-Type: application/json" -H "x-role: admin" \
   -d '{"filter":{"author":"Robert Lee"}}' http://localhost:3000/articles
 

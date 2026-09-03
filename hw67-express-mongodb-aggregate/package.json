@@ -30,11 +30,18 @@
     "updateMany",
     "replaceOne",
     "deleteOne",
-    "deleteMany"
+    "deleteMany",
+    "cursor",
+    "aggregate",
+    "aggregation",
+    "group",
+    "facet",
+    "ndjson",
+    "streaming"
   ],
   "author": "",
   "license": "ISC",
-  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes, and reading/writing the /articles data in a MongoDB Atlas collection via Mongoose (find with projection, insertOne/insertMany, updateOne/updateMany/replaceOne, deleteOne/deleteMany).",
+  "description": "RESTful API server built with Express.js following the MVC pattern, extended with logging, session, authentication, validation, access-control and error-handling middlewares, rendering HTML pages with the PUG (/users) and EJS (/articles) template engines, serving a shared favicon on every page, persisting a user-selected theme via cookies, providing Passport-based (passport-local) registration/login/logout with the login state persisted server-side via express-session and an httpOnly session cookie to protect routes, and reading/writing the /articles data in a MongoDB Atlas collection via Mongoose (find with projection, insertOne/insertMany, updateOne/updateMany/replaceOne, deleteOne/deleteMany), plus cursor-based routes that stream/iterate the collection without buffering it into an array (NDJSON export, manual cursor-driven statistics) and aggregation-pipeline routes ($group, $facet) for per-author and collection-wide statistics.",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",

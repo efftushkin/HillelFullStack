@@ -10,6 +10,10 @@ const {
 const {
   getArticles,
   searchArticles,
+  exportArticles,
+  getCursorStatsSummary,
+  getAuthorStats,
+  getStatsSummary,
   createArticle,
   createArticles,
   getArticleById,
@@ -24,8 +28,13 @@ const router = express.Router();
 
 router.use(checkArticleAccess);
 
-// Registered before "/:articleId" so "search" isn't swallowed by that numeric-id route.
+// Registered before "/:articleId" so these single-segment paths aren't swallowed by that
+// numeric-id route (validateArticleId would otherwise reject "search"/"export" as an invalid id).
 router.get('/search', searchArticles);
+router.get('/export', exportArticles);
+router.get('/stats/summary', getStatsSummary);
+router.get('/stats/by-author', getAuthorStats);
+router.get('/stats/cursor-summary', getCursorStatsSummary);
 
 router.get('/', getArticles);
 router.post('/', validateArticlePayload, createArticle);
